@@ -2,7 +2,7 @@
 
 自動從政府資料開放平臺（data.gov.tw）下載工程會 7 組大宗資材價格 CSV，封存每月快照，並彙整為單一乾淨資料表，供 Power BI 讀取。
 
-排程採**方案 B**：跑在 GitHub Actions 雲端，不依賴本機開機；產出 commit 回 repo，Power BI 從 `raw.githubusercontent.com` 讀取。
+**執行架構**：來源主機 `pcic.pcc.gov.tw` 封鎖境外雲端 IP（GitHub Actions runner 一律連線逾時，實測確認），故 fetch 必須從**台灣本機**執行。因此：本機以 Windows 工作排程器每月執行 `fetch → consolidate → git push`，把產出推回 GitHub；Power BI 再從 `raw.githubusercontent.com` 讀取。GitHub repo 擔任「資料寄放 + 交付層」。
 
 ## 專案結構
 
@@ -11,7 +11,7 @@ config/sources.yaml           來源登錄檔（7 條連結、結構家族、地
 src/common.py                 共用工具：編碼、期別、數值/區間清洗、地區對照、雜湊
 src/fetch.py                  下載 + 每月不可變封存（憑證指紋釘選、退出碼驅動）
 src/consolidate.py            四種結構解析 → 標準化 → 彙整單一表 + 維度表 + 品質報告
-.github/workflows/monthly.yml GitHub Actions 每月排程（方案 B）
+scripts/run_pipeline.ps1      本機管線：fetch → consolidate → git push（供工作排程器呼叫）
 data/raw/<YYYY-MM>/           每月原始檔封存（不可變，勿手改）
 data/curated/                 輸出資料表（供 Power BI 讀取）
 ```
@@ -37,11 +37,25 @@ python src/consolidate.py   # 產出 data/curated/
 
 `fetch.py` 退出碼：`0`=有新資料、`2`=內容未變（正常）、`1`=下載失敗（告警）。
 
-## 部署到 GitHub（方案 B）
+## 每月自動執行（Windows 工作排程器）
 
-1. 建立 GitHub repo，將本專案推上去。
-2. `.github/workflows/monthly.yml` 已設定每月 12/16/20/24 日 00:00 UTC（= 08:00 台北）自動執行，並可在 Actions 頁面手動觸發（Run workflow）。
-3. 工作流會下載、彙整並把 `data/` 變更 commit 回 repo。需在 repo Settings → Actions → General → Workflow permissions 選 **Read and write permissions**。
+`scripts/run_pipeline.ps1` 會依序跑 fetch → consolidate，並把產出 commit/push 回 GitHub。
+以工作排程器每月觸發，並開啟「錯過即補跑」，只要當月開過一次機就會執行。
+`schtasks` 支援「每月指定日期」，再用 PowerShell 開啟 StartWhenAvailable（補跑）：
+
+```powershell
+# 每月 12/16/20/24 日 08:00 觸發
+schtasks /Create /TN "PCC大宗資材價格" /SC MONTHLY /D 12,16,20,24 /ST 08:00 /F `
+  /TR 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\Power BI\scripts\run_pipeline.ps1"'
+
+# 開啟「錯過即於下次開機補跑」
+$t = Get-ScheduledTask -TaskName 'PCC大宗資材價格'
+$t.Settings.StartWhenAvailable = $true
+Set-ScheduledTask -InputObject $t
+```
+
+> 發布日不固定（約次月中旬），故排多次；重複執行因內容雜湊去重而無害。
+> `git push` 使用你既有的 GitHub 登入（gh/認證管理員），無需再輸入密碼。
 
 ## Power BI 連線（由使用者處理）
 
