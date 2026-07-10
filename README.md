@@ -40,22 +40,28 @@ python src/consolidate.py   # 產出 data/curated/
 ## 每月自動執行（Windows 工作排程器）
 
 `scripts/run_pipeline.ps1` 會依序跑 fetch → consolidate，並把產出 commit/push 回 GitHub。
-以工作排程器每月觸發，並開啟「錯過即補跑」，只要當月開過一次機就會執行。
-`schtasks` 支援「每月指定日期」，再用 PowerShell 開啟 StartWhenAvailable（補跑）：
+排程採**每日 08:00**：腳本冪等（來源內容未變即 fetch 退出碼 2、秒退、不 push），
+每天跑完全無害，且能在不固定的發布日**當天就抓到**更新。已註冊的任務名為 `PCC_BulkMaterials`。
+
+重建/調整任務（PowerShell，含「錯過即補跑」StartWhenAvailable）：
 
 ```powershell
-# 每月 12/16/20/24 日 08:00 觸發
-schtasks /Create /TN "PCC大宗資材價格" /SC MONTHLY /D 12,16,20,24 /ST 08:00 /F `
-  /TR 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "D:\Power BI\scripts\run_pipeline.ps1"'
-
-# 開啟「錯過即於下次開機補跑」
-$t = Get-ScheduledTask -TaskName 'PCC大宗資材價格'
-$t.Settings.StartWhenAvailable = $true
-Set-ScheduledTask -InputObject $t
+$action  = New-ScheduledTaskAction -Execute 'powershell.exe' `
+  -Argument '-NoProfile -ExecutionPolicy Bypass -File "D:\Power BI\scripts\run_pipeline.ps1"'
+$trigger = New-ScheduledTaskTrigger -Daily -At 8am
+$set     = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 30)
+Register-ScheduledTask -TaskName 'PCC_BulkMaterials' -Action $action -Trigger $trigger -Settings $set -Force
 ```
 
-> 發布日不固定（約次月中旬），故排多次；重複執行因內容雜湊去重而無害。
+常用操作：
+```powershell
+Start-ScheduledTask -TaskName 'PCC_BulkMaterials'          # 立即手動執行
+Get-ScheduledTaskInfo -TaskName 'PCC_BulkMaterials'        # 看 LastRunTime / LastTaskResult(0x0=成功)
+Get-Content 'D:\Power BI\run.log' -Tail 20 -Encoding UTF8  # 看執行日誌
+```
+
 > `git push` 使用你既有的 GitHub 登入（gh/認證管理員），無需再輸入密碼。
+> 任務設為「僅在登入時執行」，不需儲存密碼；電腦關機錯過的排程會於下次登入後補跑。
 
 ## Power BI 連線（由使用者處理）
 
