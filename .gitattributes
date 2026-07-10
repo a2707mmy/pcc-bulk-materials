@@ -1,0 +1,5 @@
+# 這些檔案在 GitHub Actions（Ubuntu）上執行，強制 LF 以免 bash 遇到 \r 出錯。
+*.py   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.sh   text eol=lf

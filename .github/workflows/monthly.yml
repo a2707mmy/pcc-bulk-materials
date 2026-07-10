@@ -1,0 +1,58 @@
+name: 每月抓取與彙整大宗資材價格
+
+# 方案 B：排程跑在 GitHub 雲端，不依賴本機是否開機。
+# 產出 commit 回本 repo，Power BI 從 raw.githubusercontent.com 讀取 curated 檔。
+on:
+  schedule:
+    # 發布日不固定（約次月中旬），每月排 4 次；08:00 台北 = 00:00 UTC。
+    - cron: "0 0 12,16,20,24 * *"
+  workflow_dispatch: {}  # 允許手動觸發
+
+permissions:
+  contents: write  # 需要把產出 commit 回 repo
+
+concurrency:
+  group: monthly-pipeline
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: 安裝相依套件
+        run: pip install -r requirements.txt
+
+      - name: 抓取與封存（fetch）
+        id: fetch
+        run: |
+          set +e
+          python src/fetch.py
+          code=$?
+          echo "fetch_exit=$code" >> "$GITHUB_OUTPUT"
+          # 0=有新資料、2=內容未變（正常）、1=下載失敗
+          if [ "$code" = "1" ]; then exit 1; fi
+          exit 0
+
+      - name: 彙整（consolidate）
+        if: steps.fetch.outputs.fetch_exit == '0'
+        run: python src/consolidate.py
+
+      - name: Commit 產出
+        if: steps.fetch.outputs.fetch_exit == '0'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --staged --quiet; then
+            echo "無變更，略過 commit"
+          else
+            git commit -m "資料更新 $(date -u +%Y-%m-%d)"
+            git push
+          fi

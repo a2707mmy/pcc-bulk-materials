@@ -1,0 +1,104 @@
+# 大宗資材價格資料來源登錄檔
+# 新增/調整資料集只需改這裡，不需改動程式碼。
+
+host: "https://pcic.pcc.gov.tw/pwc-web/api/service/opendata-file/document/"
+
+# 該政府主機憑證缺 Subject Key Identifier，新版 OpenSSL 的鏈驗證會拒絕（SSLCertVerificationError）。
+# 為避免盲目停用 TLS 驗證（MITM 風險），改採「憑證指紋釘選」：仍驗證對方確為該伺服器，
+# 只是繞過壞掉的鏈驗證。憑證輪替時需更新此指紋（TWCA 簽發，現效期至 2027-02-11）。
+# 取得方式：見 README「更新憑證指紋」。
+tls_pin_sha256: "de0ee3b5442bbdb71a4aa264190608ce406a3fe8dedfc9e1bae95ff31add0496"
+
+datasets:
+  - name: 鋼筋
+    material: 鋼筋
+    dataset_id: 6820
+    file: "鋼筋.csv"
+    family: wide_region
+  - name: H型鋼
+    material: H型鋼
+    dataset_id: 6577
+    file: "H型鋼.csv"
+    family: wide_region
+  - name: 鋼板
+    material: 鋼板
+    dataset_id: 6578
+    file: "鋼板.csv"
+    family: wide_region
+  - name: 砂石
+    material: 砂石
+    dataset_id: 6818
+    file: "砂石.csv"
+    family: county_range
+  - name: 預拌混凝土
+    material: 預拌混凝土
+    dataset_id: 6819
+    file: "預拌混凝土.csv"
+    family: region_stat
+  - name: 瀝青混凝土
+    material: 瀝青混凝土
+    dataset_id: 6579
+    file: "瀝青混凝土.csv"
+    family: region_stat
+  - name: 大宗資材及其漲跌幅彙整表
+    material: 彙整表
+    dataset_id: 7374
+    file: "大宗資材及其漲跌幅彙整表.csv"
+    family: summary
+
+# 地區標籤 -> 北中南東/全國 彙總群組
+region_group:
+  北區: 北
+  中區: 中
+  南區: 南
+  花蓮: 東
+  台東: 東
+  北: 北
+  中: 中
+  南: 南
+  花: 東
+  東: 東
+  不分區: 全國
+
+# 地區標籤 -> 粒度層級（region=三區/東部；national=不分區；county=縣市）
+region_level:
+  北區: region
+  中區: region
+  南區: region
+  花蓮: region
+  台東: region
+  北: region
+  中: region
+  南: region
+  花: region
+  東: region
+  不分區: national
+
+# 縣市 -> 北中南東 群組（砂石為縣市粒度；宜蘭縣預設歸北區，可改）
+county_group:
+  臺北市: 北
+  台北市: 北
+  新北市: 北
+  基隆市: 北
+  桃園市: 北
+  新竹市: 北
+  新竹縣: 北
+  宜蘭縣: 北
+  臺中市: 中
+  台中市: 中
+  苗栗縣: 中
+  彰化縣: 中
+  南投縣: 中
+  雲林縣: 中
+  高雄市: 南
+  臺南市: 南
+  台南市: 南
+  嘉義市: 南
+  嘉義縣: 南
+  屏東縣: 南
+  澎湖縣: 南
+  花蓮縣: 東
+  臺東縣: 東
+  台東縣: 東
+  金門縣: 外島
+  連江縣: 外島
