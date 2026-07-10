@@ -40,15 +40,15 @@ python src/consolidate.py   # 產出 data/curated/
 ## 每月自動執行（Windows 工作排程器）
 
 `scripts/run_pipeline.ps1` 會依序跑 fetch → consolidate，並把產出 commit/push 回 GitHub。
-排程採**每日 08:00**：腳本冪等（來源內容未變即 fetch 退出碼 2、秒退、不 push），
-每天跑完全無害，且能在不固定的發布日**當天就抓到**更新。已註冊的任務名為 `PCC_BulkMaterials`。
+排程採**每週一 08:00**：腳本冪等（來源內容未變即 fetch 退出碼 2、秒退、不 push），
+發布日不固定但一週內即會抓到更新。已註冊的任務名為 `PCC_BulkMaterials`。
 
 重建/調整任務（PowerShell，含「錯過即補跑」StartWhenAvailable）：
 
 ```powershell
 $action  = New-ScheduledTaskAction -Execute 'powershell.exe' `
   -Argument '-NoProfile -ExecutionPolicy Bypass -File "D:\Power BI\scripts\run_pipeline.ps1"'
-$trigger = New-ScheduledTaskTrigger -Daily -At 8am
+$trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At 8am
 $set     = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 30)
 Register-ScheduledTask -TaskName 'PCC_BulkMaterials' -Action $action -Trigger $trigger -Settings $set -Force
 ```

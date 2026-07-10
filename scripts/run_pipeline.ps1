@@ -1,5 +1,5 @@
 # Local pipeline: fetch -> consolidate -> git push
-# Triggered monthly by Windows Task Scheduler (source blocks overseas cloud IPs,
+# Triggered weekly by Windows Task Scheduler (source blocks overseas cloud IPs,
 # so fetch must run from a Taiwan-based machine).
 # Exit codes: 0 = done (maybe no new data), 1 = failure.
 # NOTE: ASCII-only so Windows PowerShell 5.1 parses it regardless of file BOM.
