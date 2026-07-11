@@ -6,4 +6,9 @@ venv/
 .DS_Store
 run.log
 
+# Power BI 專案本機快取（Desktop 自動產生，不入版控）
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+**/.pbi/unappliedChanges.json
+
 # 保留 data/raw 與 data/curated：方案 B 以 git 版本歷史作為稽核軌跡與資料累積。

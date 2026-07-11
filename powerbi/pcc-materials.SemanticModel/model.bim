@@ -1,0 +1,213 @@
+{
+  "name": "pcc-materials",
+  "compatibilityLevel": 1567,
+  "model": {
+    "culture": "zh-TW",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "zh-TW",
+    "tables": [
+      {
+        "name": "fact_material_price",
+        "columns": [
+          { "name": "period", "dataType": "string", "sourceColumn": "period", "summarizeBy": "none" },
+          { "name": "period_roc", "dataType": "string", "sourceColumn": "period_roc", "summarizeBy": "none" },
+          { "name": "period_date", "dataType": "dateTime", "sourceColumn": "period_date", "summarizeBy": "none", "formatString": "yyyy-MM-dd" },
+          { "name": "snapshot", "dataType": "string", "sourceColumn": "snapshot", "summarizeBy": "none", "isHidden": true },
+          { "name": "material", "dataType": "string", "sourceColumn": "material", "summarizeBy": "none" },
+          { "name": "item_name", "dataType": "string", "sourceColumn": "item_name", "summarizeBy": "none" },
+          { "name": "unit", "dataType": "string", "sourceColumn": "unit", "summarizeBy": "none" },
+          { "name": "unit_assumed", "dataType": "string", "sourceColumn": "unit_assumed", "summarizeBy": "none" },
+          { "name": "region", "dataType": "string", "sourceColumn": "region", "summarizeBy": "none" },
+          { "name": "region_group", "dataType": "string", "sourceColumn": "region_group", "summarizeBy": "none" },
+          { "name": "region_level", "dataType": "string", "sourceColumn": "region_level", "summarizeBy": "none" },
+          { "name": "price", "dataType": "double", "sourceColumn": "price", "summarizeBy": "none", "formatString": "#,0" },
+          { "name": "price_min", "dataType": "double", "sourceColumn": "price_min", "summarizeBy": "none", "formatString": "#,0" },
+          { "name": "price_max", "dataType": "double", "sourceColumn": "price_max", "summarizeBy": "none", "formatString": "#,0" },
+          { "name": "price_basis", "dataType": "string", "sourceColumn": "price_basis", "summarizeBy": "none" },
+          { "name": "std_dev", "dataType": "double", "sourceColumn": "std_dev", "summarizeBy": "none" },
+          { "name": "sample_size", "dataType": "double", "sourceColumn": "sample_size", "summarizeBy": "none" },
+          { "name": "source_dataset", "dataType": "string", "sourceColumn": "source_dataset", "summarizeBy": "none", "isHidden": true },
+          { "name": "source_file", "dataType": "string", "sourceColumn": "source_file", "summarizeBy": "none", "isHidden": true },
+          { "name": "ingest_ts", "dataType": "string", "sourceColumn": "ingest_ts", "summarizeBy": "none", "isHidden": true },
+          { "name": "row_key", "dataType": "string", "sourceColumn": "row_key", "summarizeBy": "none", "isHidden": true }
+        ],
+        "partitions": [
+          {
+            "name": "fact_material_price",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/curated/fact_material_price.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
+                "    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),",
+                "    Typed = Table.TransformColumnTypes(Promoted, {{\"period_date\", type date}, {\"price\", type number}, {\"price_min\", type number}, {\"price_max\", type number}, {\"std_dev\", type number}, {\"sample_size\", type number}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          { "name": "平均價格", "expression": "AVERAGE(fact_material_price[price])", "formatString": "#,0" },
+          { "name": "平均價格下限", "expression": "AVERAGE(fact_material_price[price_min])", "formatString": "#,0" },
+          { "name": "平均價格上限", "expression": "AVERAGE(fact_material_price[price_max])", "formatString": "#,0" },
+          { "name": "最新期別", "expression": "MAX(fact_material_price[period])" },
+          { "name": "品項數", "expression": "DISTINCTCOUNT(fact_material_price[item_name])", "formatString": "0" },
+          { "name": "前月平均價格", "expression": "VAR p = MAX(dim_date[period_date]) RETURN CALCULATE([平均價格], REMOVEFILTERS(dim_date), dim_date[period_date] = EDATE(p, -1))", "formatString": "#,0" },
+          { "name": "月增率", "expression": "DIVIDE([平均價格] - [前月平均價格], [前月平均價格])", "formatString": "0.0%" }
+        ]
+      },
+      {
+        "name": "fact_price_change",
+        "columns": [
+          { "name": "period", "dataType": "string", "sourceColumn": "period", "summarizeBy": "none" },
+          { "name": "period_roc", "dataType": "string", "sourceColumn": "period_roc", "summarizeBy": "none" },
+          { "name": "period_date", "dataType": "dateTime", "sourceColumn": "period_date", "summarizeBy": "none", "formatString": "yyyy-MM-dd" },
+          { "name": "item_name", "dataType": "string", "sourceColumn": "item_name", "summarizeBy": "none" },
+          { "name": "region", "dataType": "string", "sourceColumn": "region", "summarizeBy": "none" },
+          { "name": "region_group", "dataType": "string", "sourceColumn": "region_group", "summarizeBy": "none" },
+          { "name": "horizon", "dataType": "string", "sourceColumn": "horizon", "summarizeBy": "none" },
+          { "name": "base_period", "dataType": "string", "sourceColumn": "base_period", "summarizeBy": "none" },
+          { "name": "base_reference", "dataType": "string", "sourceColumn": "base_reference", "summarizeBy": "none" },
+          { "name": "price_current", "dataType": "double", "sourceColumn": "price_current", "summarizeBy": "none", "formatString": "#,0" },
+          { "name": "price_base", "dataType": "double", "sourceColumn": "price_base", "summarizeBy": "none", "formatString": "#,0" },
+          { "name": "pct_change", "dataType": "double", "sourceColumn": "pct_change", "summarizeBy": "none", "formatString": "0.0" },
+          { "name": "source_dataset", "dataType": "string", "sourceColumn": "source_dataset", "summarizeBy": "none", "isHidden": true },
+          { "name": "source_file", "dataType": "string", "sourceColumn": "source_file", "summarizeBy": "none", "isHidden": true },
+          { "name": "ingest_ts", "dataType": "string", "sourceColumn": "ingest_ts", "summarizeBy": "none", "isHidden": true }
+        ],
+        "partitions": [
+          {
+            "name": "fact_price_change",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/curated/fact_price_change.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
+                "    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),",
+                "    Typed = Table.TransformColumnTypes(Promoted, {{\"period_date\", type date}, {\"price_current\", type number}, {\"price_base\", type number}, {\"pct_change\", type number}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          { "name": "平均漲跌幅", "expression": "DIVIDE(AVERAGE(fact_price_change[pct_change]), 100)", "formatString": "0.0%" }
+        ]
+      },
+      {
+        "name": "dim_material",
+        "columns": [
+          { "name": "material", "dataType": "string", "sourceColumn": "material", "summarizeBy": "none" },
+          { "name": "item_name", "dataType": "string", "sourceColumn": "item_name", "summarizeBy": "none" },
+          { "name": "unit", "dataType": "string", "sourceColumn": "unit", "summarizeBy": "none" },
+          { "name": "unit_assumed", "dataType": "string", "sourceColumn": "unit_assumed", "summarizeBy": "none" }
+        ],
+        "partitions": [
+          {
+            "name": "dim_material",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/curated/dim_material.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
+                "    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),",
+                "    Distinct = Table.Distinct(Promoted, {\"item_name\"})",
+                "in",
+                "    Distinct"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dim_region",
+        "columns": [
+          { "name": "region", "dataType": "string", "sourceColumn": "region", "summarizeBy": "none" },
+          { "name": "region_group", "dataType": "string", "sourceColumn": "region_group", "summarizeBy": "none" },
+          { "name": "region_level", "dataType": "string", "sourceColumn": "region_level", "summarizeBy": "none" }
+        ],
+        "partitions": [
+          {
+            "name": "dim_region",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/curated/dim_region.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
+                "    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),",
+                "    Distinct = Table.Distinct(Promoted, {\"region\"})",
+                "in",
+                "    Distinct"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "dim_date",
+        "columns": [
+          { "name": "period", "dataType": "string", "sourceColumn": "period", "summarizeBy": "none" },
+          { "name": "period_roc", "dataType": "string", "sourceColumn": "period_roc", "summarizeBy": "none" },
+          { "name": "period_date", "dataType": "dateTime", "sourceColumn": "period_date", "summarizeBy": "none", "formatString": "yyyy-MM-dd" },
+          { "name": "year", "dataType": "int64", "sourceColumn": "year", "summarizeBy": "none", "formatString": "0" },
+          { "name": "month", "dataType": "int64", "sourceColumn": "month", "summarizeBy": "none", "formatString": "0" },
+          { "name": "roc_year", "dataType": "int64", "sourceColumn": "roc_year", "summarizeBy": "none", "formatString": "0" },
+          { "name": "quarter", "dataType": "int64", "sourceColumn": "quarter", "summarizeBy": "none", "formatString": "0" }
+        ],
+        "partitions": [
+          {
+            "name": "dim_date",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/curated/dim_date.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
+                "    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),",
+                "    Typed = Table.TransformColumnTypes(Promoted, {{\"period_date\", type date}, {\"year\", Int64.Type}, {\"month\", Int64.Type}, {\"roc_year\", Int64.Type}, {\"quarter\", Int64.Type}}, \"en-US\"),",
+                "    Distinct = Table.Distinct(Typed, {\"period_date\"})",
+                "in",
+                "    Distinct"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "rel_fact_date",
+        "fromTable": "fact_material_price",
+        "fromColumn": "period_date",
+        "toTable": "dim_date",
+        "toColumn": "period_date"
+      },
+      {
+        "name": "rel_fact_region",
+        "fromTable": "fact_material_price",
+        "fromColumn": "region",
+        "toTable": "dim_region",
+        "toColumn": "region"
+      },
+      {
+        "name": "rel_fact_material",
+        "fromTable": "fact_material_price",
+        "fromColumn": "item_name",
+        "toTable": "dim_material",
+        "toColumn": "item_name"
+      }
+    ],
+    "annotations": [
+      {
+        "name": "__PBI_TimeIntelligenceEnabled",
+        "value": "0"
+      }
+    ]
+  }
+}
