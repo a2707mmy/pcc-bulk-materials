@@ -9,6 +9,40 @@ host: "https://pcic.pcc.gov.tw/pwc-web/api/service/opendata-file/document/"
 # 取得方式：見 README「更新憑證指紋」。
 tls_pin_sha256: "de0ee3b5442bbdb71a4aa264190608ce406a3fe8dedfc9e1bae95ff31add0496"
 
+# ── PDF 來源（tec0404「大宗資材價格」各類趨勢 PDF）─────────────────────────
+# 自 2026-07 起改用此來源（開放資料落後兩三個月，見記憶 opendata-source-shelved）。
+# 背後為未設限 JSON API：一次 GET 取完整目錄、再依每檔 fileNo 以 POST 下載。
+# 主機同上（pcic.pcc.gov.tw），沿用同一組憑證指紋釘選。
+pdf_api:
+  list_path: "/pwc-web/api/service/adm-files/findAdmFilesByBlackList/TEC"
+  download_path: "/pwc-web/api/service/adm-files/downloadFile"
+  business_type: "TEC_MATERIAL_PRICE"   # 目錄中屬「大宗資材價格」的檔案
+
+# 要下載並解析進模型的 6 條個別價格趨勢（依 fileNameOri 前綴比對）。
+# layout = 解析器版面家族：steel_wide(北中南) / steel_national(不分區) /
+#          county_range(縣市區間) / region_stat(分區統計長表)。
+pdf_series:
+  - material: 鋼筋
+    name_prefix: "鋼筋價格趨勢"
+    layout: steel_wide
+  - material: H型鋼
+    name_prefix: "H型鋼價格趨勢"
+    layout: steel_wide
+  - material: 鋼板
+    name_prefix: "鋼板價格趨勢"
+    layout: steel_national
+  - material: 砂石
+    name_prefix: "砂石價格趨勢"
+    layout: county_range
+  - material: 預拌混凝土
+    name_prefix: "預拌混凝土價格趨勢"
+    layout: region_stat
+  - material: 瀝青混凝土
+    name_prefix: "瀝青混凝土價格趨勢"
+    layout: region_stat
+
+# ── 開放資料集登錄（已停用為即時源；保留供未來需要時重啟）────────────────
+# 2026-07 起不再使用（資料落後）。詳見記憶 opendata-source-shelved。
 datasets:
   - name: 鋼筋
     material: 鋼筋

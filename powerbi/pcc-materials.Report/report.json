@@ -1,136 +1,116 @@
 {
-  "config": "{\"version\":\"5.43\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU06\",\"version\":\"5.43\",\"type\":2}},\"activeSectionIndex\":0,\"defaultDrillFilterOtherVisuals\":true}",
+  "config": "{\"version\": \"5.66\", \"themeCollection\": {\"baseTheme\": {\"name\": \"CY24SU06\", \"type\": 2, \"version\": {\"visual\": \"1.8.79\", \"report\": \"2.0.79\", \"page\": \"1.3.79\"}}}, \"activeSectionIndex\": 0, \"defaultDrillFilterOtherVisuals\": true, \"linguisticSchemaSyncVersion\": 2}",
   "layoutOptimization": 0,
+  "publicCustomVisuals": [],
   "resourcePackages": [
     {
       "resourcePackage": {
-        "name": "SharedResources",
-        "type": 2,
+        "disabled": false,
         "items": [
           {
             "name": "CY24SU06",
             "path": "BaseThemes/CY24SU06.json",
             "type": 202
           }
-        ]
+        ],
+        "name": "SharedResources",
+        "type": 2
       }
     }
   ],
   "sections": [
     {
-      "name": "section1",
-      "displayName": "價格總覽",
+      "name": "sectionWar",
+      "displayName": "物料戰情室",
       "filters": "[]",
       "ordinal": 0,
       "visualContainers": [
         {
           "x": 24,
-          "y": 24,
+          "y": 16,
           "z": 0,
-          "width": 250,
-          "height": 68,
-          "config": "{\"name\":\"slcMaterial\",\"layouts\":[{\"id\":0,\"position\":{\"x\":24,\"y\":24,\"z\":0,\"width\":250,\"height\":68}}],\"singleVisual\":{\"visualType\":\"slicer\",\"projections\":{\"Values\":[{\"queryRef\":\"dim_material.material\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"m\",\"Entity\":\"dim_material\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"m\"}},\"Property\":\"material\"},\"Name\":\"dim_material.material\"}]},\"drillFilterOtherVisuals\":true,\"objects\":{\"data\":[{\"properties\":{\"mode\":{\"expr\":{\"Literal\":{\"Value\":\"'Dropdown'\"}}}}}]}}}",
-          "filters": "[]"
+          "width": 258,
+          "height": 120,
+          "config": "{\"name\": \"slcRegion\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 24, \"y\": 16, \"z\": 0, \"width\": 258, \"height\": 120}}], \"singleVisual\": {\"visualType\": \"slicer\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_price_history.region_group\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"h\", \"Entity\": \"fact_price_history\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"region_group\"}, \"Name\": \"fact_price_history.region_group\"}]}, \"drillFilterOtherVisuals\": true, \"vcObjects\": {\"background\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#FFFFFF'\"}}}}}}}], \"border\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#E3E8F0'\"}}}}}, \"radius\": {\"expr\": {\"Literal\": {\"Value\": \"12D\"}}}}}], \"visualHeader\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"false\"}}}}}], \"title\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"text\": {\"expr\": {\"Literal\": {\"Value\": \"'區域'\"}}}, \"fontColor\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#141B27'\"}}}}}, \"fontSize\": {\"expr\": {\"Literal\": {\"Value\": \"13D\"}}}, \"titleWrap\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[{\"name\": \"fltRegion\", \"expression\": {\"Column\": {\"Expression\": {\"SourceRef\": {\"Entity\": \"fact_price_history\"}}, \"Property\": \"region_group\"}}, \"filter\": {\"Version\": 2, \"From\": [{\"Name\": \"f\", \"Entity\": \"fact_price_history\", \"Type\": 0}], \"Where\": [{\"Condition\": {\"Not\": {\"Expression\": {\"In\": {\"Expressions\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"f\"}}, \"Property\": \"region_group\"}}], \"Values\": [[{\"Literal\": {\"Value\": \"'全國'\"}}]]}}}}}]}, \"type\": \"Categorical\"}]"
         },
         {
-          "x": 290,
-          "y": 24,
+          "x": 296,
+          "y": 16,
           "z": 1,
-          "width": 250,
-          "height": 68,
-          "config": "{\"name\":\"slcRegionGrp\",\"layouts\":[{\"id\":0,\"position\":{\"x\":290,\"y\":24,\"z\":1,\"width\":250,\"height\":68}}],\"singleVisual\":{\"visualType\":\"slicer\",\"projections\":{\"Values\":[{\"queryRef\":\"dim_region.region_group\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"r\",\"Entity\":\"dim_region\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"r\"}},\"Property\":\"region_group\"},\"Name\":\"dim_region.region_group\"}]},\"drillFilterOtherVisuals\":true,\"objects\":{\"data\":[{\"properties\":{\"mode\":{\"expr\":{\"Literal\":{\"Value\":\"'Dropdown'\"}}}}}]}}}",
+          "width": 300,
+          "height": 120,
+          "config": "{\"name\": \"slcDate\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 296, \"y\": 16, \"z\": 1, \"width\": 300, \"height\": 120}}], \"singleVisual\": {\"visualType\": \"slicer\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_price_history.period_date\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"h\", \"Entity\": \"fact_price_history\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"period_date\"}, \"Name\": \"fact_price_history.period_date\"}]}, \"drillFilterOtherVisuals\": true, \"vcObjects\": {\"background\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#FFFFFF'\"}}}}}}}], \"border\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#E3E8F0'\"}}}}}, \"radius\": {\"expr\": {\"Literal\": {\"Value\": \"12D\"}}}}}], \"visualHeader\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"false\"}}}}}], \"title\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"text\": {\"expr\": {\"Literal\": {\"Value\": \"'時間範圍'\"}}}, \"fontColor\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#141B27'\"}}}}}, \"fontSize\": {\"expr\": {\"Literal\": {\"Value\": \"13D\"}}}, \"titleWrap\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
           "filters": "[]"
         },
         {
-          "x": 560,
-          "y": 24,
+          "x": 612,
+          "y": 16,
           "z": 2,
-          "width": 200,
-          "height": 68,
-          "config": "{\"name\":\"crdPeriod\",\"layouts\":[{\"id\":0,\"position\":{\"x\":560,\"y\":24,\"z\":2,\"width\":200,\"height\":68}}],\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"fact_material_price.最新期別\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"f\",\"Entity\":\"fact_material_price\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"最新期別\"},\"Name\":\"fact_material_price.最新期別\"}]},\"drillFilterOtherVisuals\":true}}",
+          "width": 158,
+          "height": 120,
+          "config": "{\"name\": \"kpiRebar\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 612, \"y\": 16, \"z\": 2, \"width\": 158, \"height\": 120}}], \"singleVisual\": {\"visualType\": \"multiRowCard\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_price_history.鋼筋現價\"}, {\"queryRef\": \"fact_price_history.鋼筋年漲跌\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"h\", \"Entity\": \"fact_price_history\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"鋼筋現價\"}, \"Name\": \"fact_price_history.鋼筋現價\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"鋼筋年漲跌\"}, \"Name\": \"fact_price_history.鋼筋年漲跌\"}]}, \"drillFilterOtherVisuals\": true, \"vcObjects\": {\"background\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#FFFFFF'\"}}}}}}}], \"border\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#2a78d6'\"}}}}}, \"radius\": {\"expr\": {\"Literal\": {\"Value\": \"12D\"}}}}}], \"visualHeader\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"false\"}}}}}], \"title\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"text\": {\"expr\": {\"Literal\": {\"Value\": \"'鋼筋 元/噸'\"}}}, \"fontColor\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#141B27'\"}}}}}, \"fontSize\": {\"expr\": {\"Literal\": {\"Value\": \"13D\"}}}, \"titleWrap\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
           "filters": "[]"
         },
         {
-          "x": 24,
-          "y": 110,
+          "x": 782,
+          "y": 16,
           "z": 3,
-          "width": 736,
-          "height": 280,
-          "config": "{\"name\":\"linTrend\",\"layouts\":[{\"id\":0,\"position\":{\"x\":24,\"y\":110,\"z\":3,\"width\":736,\"height\":280}}],\"singleVisual\":{\"visualType\":\"lineChart\",\"projections\":{\"Category\":[{\"queryRef\":\"fact_material_price.period_date\"}],\"Series\":[{\"queryRef\":\"fact_material_price.region_group\"}],\"Y\":[{\"queryRef\":\"fact_material_price.平均價格\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"f\",\"Entity\":\"fact_material_price\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"period_date\"},\"Name\":\"fact_material_price.period_date\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"region_group\"},\"Name\":\"fact_material_price.region_group\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"平均價格\"},\"Name\":\"fact_material_price.平均價格\"}]},\"drillFilterOtherVisuals\":true,\"vcObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'各期平均價格走勢（依區域）'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "width": 158,
+          "height": 120,
+          "config": "{\"name\": \"kpiAsph\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 782, \"y\": 16, \"z\": 3, \"width\": 158, \"height\": 120}}], \"singleVisual\": {\"visualType\": \"multiRowCard\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_price_history.瀝青現價\"}, {\"queryRef\": \"fact_price_history.瀝青年漲跌\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"h\", \"Entity\": \"fact_price_history\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"瀝青現價\"}, \"Name\": \"fact_price_history.瀝青現價\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"瀝青年漲跌\"}, \"Name\": \"fact_price_history.瀝青年漲跌\"}]}, \"drillFilterOtherVisuals\": true, \"vcObjects\": {\"background\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#FFFFFF'\"}}}}}}}], \"border\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#eb6834'\"}}}}}, \"radius\": {\"expr\": {\"Literal\": {\"Value\": \"12D\"}}}}}], \"visualHeader\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"false\"}}}}}], \"title\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"text\": {\"expr\": {\"Literal\": {\"Value\": \"'瀝青 元/噸'\"}}}, \"fontColor\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#141B27'\"}}}}}, \"fontSize\": {\"expr\": {\"Literal\": {\"Value\": \"13D\"}}}, \"titleWrap\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
           "filters": "[]"
         },
         {
-          "x": 24,
-          "y": 400,
+          "x": 952,
+          "y": 16,
           "z": 4,
-          "width": 736,
-          "height": 296,
-          "config": "{\"name\":\"barRegion\",\"layouts\":[{\"id\":0,\"position\":{\"x\":24,\"y\":400,\"z\":4,\"width\":736,\"height\":296}}],\"singleVisual\":{\"visualType\":\"clusteredBarChart\",\"projections\":{\"Category\":[{\"queryRef\":\"fact_material_price.region\"}],\"Y\":[{\"queryRef\":\"fact_material_price.平均價格\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"f\",\"Entity\":\"fact_material_price\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"region\"},\"Name\":\"fact_material_price.region\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"平均價格\"},\"Name\":\"fact_material_price.平均價格\"}]},\"drillFilterOtherVisuals\":true,\"vcObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'各地區平均價格'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "width": 150,
+          "height": 120,
+          "config": "{\"name\": \"kpiConc\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 952, \"y\": 16, \"z\": 4, \"width\": 150, \"height\": 120}}], \"singleVisual\": {\"visualType\": \"multiRowCard\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_price_history.預拌現價\"}, {\"queryRef\": \"fact_price_history.預拌年漲跌\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"h\", \"Entity\": \"fact_price_history\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"預拌現價\"}, \"Name\": \"fact_price_history.預拌現價\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"預拌年漲跌\"}, \"Name\": \"fact_price_history.預拌年漲跌\"}]}, \"drillFilterOtherVisuals\": true, \"vcObjects\": {\"background\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#FFFFFF'\"}}}}}}}], \"border\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#1baf7a'\"}}}}}, \"radius\": {\"expr\": {\"Literal\": {\"Value\": \"12D\"}}}}}], \"visualHeader\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"false\"}}}}}], \"title\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"text\": {\"expr\": {\"Literal\": {\"Value\": \"'預拌 元/方'\"}}}, \"fontColor\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#141B27'\"}}}}}, \"fontSize\": {\"expr\": {\"Literal\": {\"Value\": \"13D\"}}}, \"titleWrap\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
           "filters": "[]"
         },
         {
-          "x": 780,
-          "y": 110,
+          "x": 1114,
+          "y": 16,
           "z": 5,
-          "width": 476,
-          "height": 586,
-          "config": "{\"name\":\"tblDetail\",\"layouts\":[{\"id\":0,\"position\":{\"x\":780,\"y\":110,\"z\":5,\"width\":476,\"height\":586}}],\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"fact_material_price.material\"},{\"queryRef\":\"fact_material_price.item_name\"},{\"queryRef\":\"fact_material_price.region\"},{\"queryRef\":\"fact_material_price.unit\"},{\"queryRef\":\"fact_material_price.平均價格\"},{\"queryRef\":\"fact_material_price.平均價格下限\"},{\"queryRef\":\"fact_material_price.平均價格上限\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"f\",\"Entity\":\"fact_material_price\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"material\"},\"Name\":\"fact_material_price.material\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"item_name\"},\"Name\":\"fact_material_price.item_name\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"region\"},\"Name\":\"fact_material_price.region\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"unit\"},\"Name\":\"fact_material_price.unit\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"平均價格\"},\"Name\":\"fact_material_price.平均價格\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"平均價格下限\"},\"Name\":\"fact_material_price.平均價格下限\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"f\"}},\"Property\":\"平均價格上限\"},\"Name\":\"fact_material_price.平均價格上限\"}]},\"drillFilterOtherVisuals\":true,\"vcObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'品項明細'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
-          "filters": "[]"
-        }
-      ],
-      "config": "{}",
-      "displayOption": 1,
-      "width": 1280,
-      "height": 720
-    },
-    {
-      "name": "section2",
-      "displayName": "漲跌幅分析",
-      "filters": "[]",
-      "ordinal": 1,
-      "visualContainers": [
-        {
-          "x": 24,
-          "y": 24,
-          "z": 0,
-          "width": 250,
-          "height": 68,
-          "config": "{\"name\":\"slcHorizon\",\"layouts\":[{\"id\":0,\"position\":{\"x\":24,\"y\":24,\"z\":0,\"width\":250,\"height\":68}}],\"singleVisual\":{\"visualType\":\"slicer\",\"projections\":{\"Values\":[{\"queryRef\":\"fact_price_change.horizon\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"fact_price_change\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"horizon\"},\"Name\":\"fact_price_change.horizon\"}]},\"drillFilterOtherVisuals\":true,\"objects\":{\"data\":[{\"properties\":{\"mode\":{\"expr\":{\"Literal\":{\"Value\":\"'Dropdown'\"}}}}}]}}}",
-          "filters": "[]"
-        },
-        {
-          "x": 290,
-          "y": 24,
-          "z": 1,
-          "width": 250,
-          "height": 68,
-          "config": "{\"name\":\"slcRegion2\",\"layouts\":[{\"id\":0,\"position\":{\"x\":290,\"y\":24,\"z\":1,\"width\":250,\"height\":68}}],\"singleVisual\":{\"visualType\":\"slicer\",\"projections\":{\"Values\":[{\"queryRef\":\"fact_price_change.region_group\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"fact_price_change\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"region_group\"},\"Name\":\"fact_price_change.region_group\"}]},\"drillFilterOtherVisuals\":true,\"objects\":{\"data\":[{\"properties\":{\"mode\":{\"expr\":{\"Literal\":{\"Value\":\"'Dropdown'\"}}}}}]}}}",
+          "width": 142,
+          "height": 120,
+          "config": "{\"name\": \"kpiHbeam\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 1114, \"y\": 16, \"z\": 5, \"width\": 142, \"height\": 120}}], \"singleVisual\": {\"visualType\": \"multiRowCard\", \"projections\": {\"Values\": [{\"queryRef\": \"fact_price_history.H型鋼現價\"}, {\"queryRef\": \"fact_price_history.H型鋼年漲跌\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"h\", \"Entity\": \"fact_price_history\", \"Type\": 0}], \"Select\": [{\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"H型鋼現價\"}, \"Name\": \"fact_price_history.H型鋼現價\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"H型鋼年漲跌\"}, \"Name\": \"fact_price_history.H型鋼年漲跌\"}]}, \"drillFilterOtherVisuals\": true, \"vcObjects\": {\"background\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#FFFFFF'\"}}}}}}}], \"border\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#4a3aa7'\"}}}}}, \"radius\": {\"expr\": {\"Literal\": {\"Value\": \"12D\"}}}}}], \"visualHeader\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"false\"}}}}}], \"title\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"text\": {\"expr\": {\"Literal\": {\"Value\": \"'H型鋼 元/噸'\"}}}, \"fontColor\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#141B27'\"}}}}}, \"fontSize\": {\"expr\": {\"Literal\": {\"Value\": \"13D\"}}}, \"titleWrap\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
           "filters": "[]"
         },
         {
           "x": 24,
-          "y": 110,
-          "z": 2,
-          "width": 610,
-          "height": 586,
-          "config": "{\"name\":\"barChange\",\"layouts\":[{\"id\":0,\"position\":{\"x\":24,\"y\":110,\"z\":2,\"width\":610,\"height\":586}}],\"singleVisual\":{\"visualType\":\"clusteredBarChart\",\"projections\":{\"Category\":[{\"queryRef\":\"fact_price_change.item_name\"}],\"Y\":[{\"queryRef\":\"fact_price_change.平均漲跌幅\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"fact_price_change\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"item_name\"},\"Name\":\"fact_price_change.item_name\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"平均漲跌幅\"},\"Name\":\"fact_price_change.平均漲跌幅\"}]},\"drillFilterOtherVisuals\":true,\"vcObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'各品項平均漲跌幅'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "y": 148,
+          "z": 6,
+          "width": 616,
+          "height": 238,
+          "config": "{\"name\": \"lnSteel\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 24, \"y\": 148, \"z\": 6, \"width\": 616, \"height\": 238}}], \"singleVisual\": {\"visualType\": \"lineChart\", \"projections\": {\"Category\": [{\"queryRef\": \"fact_price_history.period_date\"}], \"Y\": [{\"queryRef\": \"fact_price_history.鋼筋均價\"}, {\"queryRef\": \"fact_price_history.H型鋼均價\"}, {\"queryRef\": \"fact_price_history.鋼板均價\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"h\", \"Entity\": \"fact_price_history\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"period_date\"}, \"Name\": \"fact_price_history.period_date\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"鋼筋均價\"}, \"Name\": \"fact_price_history.鋼筋均價\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"H型鋼均價\"}, \"Name\": \"fact_price_history.H型鋼均價\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"鋼板均價\"}, \"Name\": \"fact_price_history.鋼板均價\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {\"dataPoint\": [{\"selector\": {\"metadata\": \"fact_price_history.鋼筋均價\"}, \"properties\": {\"fill\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#2a78d6'\"}}}}}}}, {\"selector\": {\"metadata\": \"fact_price_history.H型鋼均價\"}, \"properties\": {\"fill\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#4a3aa7'\"}}}}}}}, {\"selector\": {\"metadata\": \"fact_price_history.鋼板均價\"}, \"properties\": {\"fill\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#e34948'\"}}}}}}}]}, \"vcObjects\": {\"background\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#FFFFFF'\"}}}}}}}], \"border\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#E3E8F0'\"}}}}}, \"radius\": {\"expr\": {\"Literal\": {\"Value\": \"12D\"}}}}}], \"visualHeader\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"false\"}}}}}], \"title\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"text\": {\"expr\": {\"Literal\": {\"Value\": \"'鋼材單價走勢（元/噸）'\"}}}, \"fontColor\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#141B27'\"}}}}}, \"fontSize\": {\"expr\": {\"Literal\": {\"Value\": \"13D\"}}}, \"titleWrap\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
           "filters": "[]"
         },
         {
-          "x": 650,
-          "y": 110,
-          "z": 3,
-          "width": 606,
-          "height": 586,
-          "config": "{\"name\":\"tblChange\",\"layouts\":[{\"id\":0,\"position\":{\"x\":650,\"y\":110,\"z\":3,\"width\":606,\"height\":586}}],\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"fact_price_change.period\"},{\"queryRef\":\"fact_price_change.item_name\"},{\"queryRef\":\"fact_price_change.region\"},{\"queryRef\":\"fact_price_change.horizon\"},{\"queryRef\":\"fact_price_change.base_period\"},{\"queryRef\":\"fact_price_change.price_current\"},{\"queryRef\":\"fact_price_change.price_base\"},{\"queryRef\":\"fact_price_change.pct_change\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"c\",\"Entity\":\"fact_price_change\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"period\"},\"Name\":\"fact_price_change.period\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"item_name\"},\"Name\":\"fact_price_change.item_name\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"region\"},\"Name\":\"fact_price_change.region\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"horizon\"},\"Name\":\"fact_price_change.horizon\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"base_period\"},\"Name\":\"fact_price_change.base_period\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"price_current\"},\"Name\":\"fact_price_change.price_current\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"price_base\"},\"Name\":\"fact_price_change.price_base\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"c\"}},\"Property\":\"pct_change\"},\"Name\":\"fact_price_change.pct_change\"}]},\"drillFilterOtherVisuals\":true,\"vcObjects\":{\"title\":[{\"properties\":{\"text\":{\"expr\":{\"Literal\":{\"Value\":\"'漲跌幅明細'\"}}},\"show\":{\"expr\":{\"Literal\":{\"Value\":\"true\"}}}}}]}}}",
+          "x": 656,
+          "y": 148,
+          "z": 7,
+          "width": 600,
+          "height": 238,
+          "config": "{\"name\": \"lnConc\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 656, \"y\": 148, \"z\": 7, \"width\": 600, \"height\": 238}}], \"singleVisual\": {\"visualType\": \"lineChart\", \"projections\": {\"Category\": [{\"queryRef\": \"fact_price_history.period_date\"}], \"Y\": [{\"queryRef\": \"fact_price_history.預拌均價\"}, {\"queryRef\": \"fact_price_history.瀝青均價\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"h\", \"Entity\": \"fact_price_history\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"period_date\"}, \"Name\": \"fact_price_history.period_date\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"預拌均價\"}, \"Name\": \"fact_price_history.預拌均價\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"瀝青均價\"}, \"Name\": \"fact_price_history.瀝青均價\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {\"dataPoint\": [{\"selector\": {\"metadata\": \"fact_price_history.預拌均價\"}, \"properties\": {\"fill\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#1baf7a'\"}}}}}}}, {\"selector\": {\"metadata\": \"fact_price_history.瀝青均價\"}, \"properties\": {\"fill\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#eb6834'\"}}}}}}}]}, \"vcObjects\": {\"background\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#FFFFFF'\"}}}}}}}], \"border\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#E3E8F0'\"}}}}}, \"radius\": {\"expr\": {\"Literal\": {\"Value\": \"12D\"}}}}}], \"visualHeader\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"false\"}}}}}], \"title\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"text\": {\"expr\": {\"Literal\": {\"Value\": \"'混凝土·瀝青單價走勢（元/方,元/噸）'\"}}}, \"fontColor\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#141B27'\"}}}}}, \"fontSize\": {\"expr\": {\"Literal\": {\"Value\": \"13D\"}}}, \"titleWrap\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
+          "filters": "[]"
+        },
+        {
+          "x": 24,
+          "y": 398,
+          "z": 8,
+          "width": 1232,
+          "height": 304,
+          "config": "{\"name\": \"barYoY\", \"layouts\": [{\"id\": 0, \"position\": {\"x\": 24, \"y\": 398, \"z\": 8, \"width\": 1232, \"height\": 304}}], \"singleVisual\": {\"visualType\": \"barChart\", \"projections\": {\"Category\": [{\"queryRef\": \"fact_price_history.material\"}], \"Y\": [{\"queryRef\": \"fact_price_history.年漲跌\"}]}, \"prototypeQuery\": {\"Version\": 2, \"From\": [{\"Name\": \"h\", \"Entity\": \"fact_price_history\", \"Type\": 0}], \"Select\": [{\"Column\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"material\"}, \"Name\": \"fact_price_history.material\"}, {\"Measure\": {\"Expression\": {\"SourceRef\": {\"Source\": \"h\"}}, \"Property\": \"年漲跌\"}, \"Name\": \"fact_price_history.年漲跌\"}]}, \"drillFilterOtherVisuals\": true, \"objects\": {\"dataPoint\": [{\"selector\": {\"metadata\": \"fact_price_history.年漲跌\"}, \"properties\": {\"fill\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#2a78d6'\"}}}}}}}]}, \"vcObjects\": {\"background\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#FFFFFF'\"}}}}}}}], \"border\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#E3E8F0'\"}}}}}, \"radius\": {\"expr\": {\"Literal\": {\"Value\": \"12D\"}}}}}], \"visualHeader\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"false\"}}}}}], \"title\": [{\"properties\": {\"show\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}, \"text\": {\"expr\": {\"Literal\": {\"Value\": \"'近一年漲跌幅（YoY）'\"}}}, \"fontColor\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#141B27'\"}}}}}, \"fontSize\": {\"expr\": {\"Literal\": {\"Value\": \"13D\"}}}, \"titleWrap\": {\"expr\": {\"Literal\": {\"Value\": \"true\"}}}}}]}}}",
           "filters": "[]"
         }
       ],
-      "config": "{}",
-      "displayOption": 1,
+      "config": "{\"objects\": {\"background\": [{\"properties\": {\"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#EBEEF3'\"}}}}}, \"transparency\": {\"expr\": {\"Literal\": {\"Value\": \"0D\"}}}}}], \"outspace\": [{\"properties\": {\"color\": {\"solid\": {\"color\": {\"expr\": {\"Literal\": {\"Value\": \"'#EBEEF3'\"}}}}}, \"transparency\": {\"expr\": {\"Literal\": {\"Value\": \"0D\"}}}}}]}}",
+      "displayOption": 0,
       "width": 1280,
       "height": 720
     }
-  ],
-  "publicCustomVisuals": []
+  ]
 }

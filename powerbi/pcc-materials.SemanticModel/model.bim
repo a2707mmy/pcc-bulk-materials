@@ -1,212 +1,383 @@
 {
-  "name": "pcc-materials",
-  "compatibilityLevel": 1567,
+  "compatibilityLevel": 1600,
   "model": {
-    "culture": "zh-TW",
-    "defaultPowerBIDataSourceVersion": "powerBI_V3",
-    "sourceQueryCulture": "zh-TW",
-    "tables": [
-      {
-        "name": "fact_material_price",
-        "columns": [
-          { "name": "period", "dataType": "string", "sourceColumn": "period", "summarizeBy": "none" },
-          { "name": "period_roc", "dataType": "string", "sourceColumn": "period_roc", "summarizeBy": "none" },
-          { "name": "period_date", "dataType": "dateTime", "sourceColumn": "period_date", "summarizeBy": "none", "formatString": "yyyy-MM-dd" },
-          { "name": "snapshot", "dataType": "string", "sourceColumn": "snapshot", "summarizeBy": "none", "isHidden": true },
-          { "name": "material", "dataType": "string", "sourceColumn": "material", "summarizeBy": "none" },
-          { "name": "item_name", "dataType": "string", "sourceColumn": "item_name", "summarizeBy": "none" },
-          { "name": "unit", "dataType": "string", "sourceColumn": "unit", "summarizeBy": "none" },
-          { "name": "unit_assumed", "dataType": "string", "sourceColumn": "unit_assumed", "summarizeBy": "none" },
-          { "name": "region", "dataType": "string", "sourceColumn": "region", "summarizeBy": "none" },
-          { "name": "region_group", "dataType": "string", "sourceColumn": "region_group", "summarizeBy": "none" },
-          { "name": "region_level", "dataType": "string", "sourceColumn": "region_level", "summarizeBy": "none" },
-          { "name": "price", "dataType": "double", "sourceColumn": "price", "summarizeBy": "none", "formatString": "#,0" },
-          { "name": "price_min", "dataType": "double", "sourceColumn": "price_min", "summarizeBy": "none", "formatString": "#,0" },
-          { "name": "price_max", "dataType": "double", "sourceColumn": "price_max", "summarizeBy": "none", "formatString": "#,0" },
-          { "name": "price_basis", "dataType": "string", "sourceColumn": "price_basis", "summarizeBy": "none" },
-          { "name": "std_dev", "dataType": "double", "sourceColumn": "std_dev", "summarizeBy": "none" },
-          { "name": "sample_size", "dataType": "double", "sourceColumn": "sample_size", "summarizeBy": "none" },
-          { "name": "source_dataset", "dataType": "string", "sourceColumn": "source_dataset", "summarizeBy": "none", "isHidden": true },
-          { "name": "source_file", "dataType": "string", "sourceColumn": "source_file", "summarizeBy": "none", "isHidden": true },
-          { "name": "ingest_ts", "dataType": "string", "sourceColumn": "ingest_ts", "summarizeBy": "none", "isHidden": true },
-          { "name": "row_key", "dataType": "string", "sourceColumn": "row_key", "summarizeBy": "none", "isHidden": true }
-        ],
-        "partitions": [
-          {
-            "name": "fact_material_price",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/curated/fact_material_price.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
-                "    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),",
-                "    Typed = Table.TransformColumnTypes(Promoted, {{\"period_date\", type date}, {\"price\", type number}, {\"price_min\", type number}, {\"price_max\", type number}, {\"std_dev\", type number}, {\"sample_size\", type number}}, \"en-US\")",
-                "in",
-                "    Typed"
-              ]
-            }
-          }
-        ],
-        "measures": [
-          { "name": "平均價格", "expression": "AVERAGE(fact_material_price[price])", "formatString": "#,0" },
-          { "name": "平均價格下限", "expression": "AVERAGE(fact_material_price[price_min])", "formatString": "#,0" },
-          { "name": "平均價格上限", "expression": "AVERAGE(fact_material_price[price_max])", "formatString": "#,0" },
-          { "name": "最新期別", "expression": "MAX(fact_material_price[period])" },
-          { "name": "品項數", "expression": "DISTINCTCOUNT(fact_material_price[item_name])", "formatString": "0" },
-          { "name": "前月平均價格", "expression": "VAR p = MAX(dim_date[period_date]) RETURN CALCULATE([平均價格], REMOVEFILTERS(dim_date), dim_date[period_date] = EDATE(p, -1))", "formatString": "#,0" },
-          { "name": "月增率", "expression": "DIVIDE([平均價格] - [前月平均價格], [前月平均價格])", "formatString": "0.0%" }
-        ]
-      },
-      {
-        "name": "fact_price_change",
-        "columns": [
-          { "name": "period", "dataType": "string", "sourceColumn": "period", "summarizeBy": "none" },
-          { "name": "period_roc", "dataType": "string", "sourceColumn": "period_roc", "summarizeBy": "none" },
-          { "name": "period_date", "dataType": "dateTime", "sourceColumn": "period_date", "summarizeBy": "none", "formatString": "yyyy-MM-dd" },
-          { "name": "item_name", "dataType": "string", "sourceColumn": "item_name", "summarizeBy": "none" },
-          { "name": "region", "dataType": "string", "sourceColumn": "region", "summarizeBy": "none" },
-          { "name": "region_group", "dataType": "string", "sourceColumn": "region_group", "summarizeBy": "none" },
-          { "name": "horizon", "dataType": "string", "sourceColumn": "horizon", "summarizeBy": "none" },
-          { "name": "base_period", "dataType": "string", "sourceColumn": "base_period", "summarizeBy": "none" },
-          { "name": "base_reference", "dataType": "string", "sourceColumn": "base_reference", "summarizeBy": "none" },
-          { "name": "price_current", "dataType": "double", "sourceColumn": "price_current", "summarizeBy": "none", "formatString": "#,0" },
-          { "name": "price_base", "dataType": "double", "sourceColumn": "price_base", "summarizeBy": "none", "formatString": "#,0" },
-          { "name": "pct_change", "dataType": "double", "sourceColumn": "pct_change", "summarizeBy": "none", "formatString": "0.0" },
-          { "name": "source_dataset", "dataType": "string", "sourceColumn": "source_dataset", "summarizeBy": "none", "isHidden": true },
-          { "name": "source_file", "dataType": "string", "sourceColumn": "source_file", "summarizeBy": "none", "isHidden": true },
-          { "name": "ingest_ts", "dataType": "string", "sourceColumn": "ingest_ts", "summarizeBy": "none", "isHidden": true }
-        ],
-        "partitions": [
-          {
-            "name": "fact_price_change",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/curated/fact_price_change.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
-                "    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),",
-                "    Typed = Table.TransformColumnTypes(Promoted, {{\"period_date\", type date}, {\"price_current\", type number}, {\"price_base\", type number}, {\"pct_change\", type number}}, \"en-US\")",
-                "in",
-                "    Typed"
-              ]
-            }
-          }
-        ],
-        "measures": [
-          { "name": "平均漲跌幅", "expression": "DIVIDE(AVERAGE(fact_price_change[pct_change]), 100)", "formatString": "0.0%" }
-        ]
-      },
-      {
-        "name": "dim_material",
-        "columns": [
-          { "name": "material", "dataType": "string", "sourceColumn": "material", "summarizeBy": "none" },
-          { "name": "item_name", "dataType": "string", "sourceColumn": "item_name", "summarizeBy": "none" },
-          { "name": "unit", "dataType": "string", "sourceColumn": "unit", "summarizeBy": "none" },
-          { "name": "unit_assumed", "dataType": "string", "sourceColumn": "unit_assumed", "summarizeBy": "none" }
-        ],
-        "partitions": [
-          {
-            "name": "dim_material",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/curated/dim_material.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
-                "    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),",
-                "    Distinct = Table.Distinct(Promoted, {\"item_name\"})",
-                "in",
-                "    Distinct"
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "name": "dim_region",
-        "columns": [
-          { "name": "region", "dataType": "string", "sourceColumn": "region", "summarizeBy": "none" },
-          { "name": "region_group", "dataType": "string", "sourceColumn": "region_group", "summarizeBy": "none" },
-          { "name": "region_level", "dataType": "string", "sourceColumn": "region_level", "summarizeBy": "none" }
-        ],
-        "partitions": [
-          {
-            "name": "dim_region",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/curated/dim_region.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
-                "    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),",
-                "    Distinct = Table.Distinct(Promoted, {\"region\"})",
-                "in",
-                "    Distinct"
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "name": "dim_date",
-        "columns": [
-          { "name": "period", "dataType": "string", "sourceColumn": "period", "summarizeBy": "none" },
-          { "name": "period_roc", "dataType": "string", "sourceColumn": "period_roc", "summarizeBy": "none" },
-          { "name": "period_date", "dataType": "dateTime", "sourceColumn": "period_date", "summarizeBy": "none", "formatString": "yyyy-MM-dd" },
-          { "name": "year", "dataType": "int64", "sourceColumn": "year", "summarizeBy": "none", "formatString": "0" },
-          { "name": "month", "dataType": "int64", "sourceColumn": "month", "summarizeBy": "none", "formatString": "0" },
-          { "name": "roc_year", "dataType": "int64", "sourceColumn": "roc_year", "summarizeBy": "none", "formatString": "0" },
-          { "name": "quarter", "dataType": "int64", "sourceColumn": "quarter", "summarizeBy": "none", "formatString": "0" }
-        ],
-        "partitions": [
-          {
-            "name": "dim_date",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/curated/dim_date.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
-                "    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),",
-                "    Typed = Table.TransformColumnTypes(Promoted, {{\"period_date\", type date}, {\"year\", Int64.Type}, {\"month\", Int64.Type}, {\"roc_year\", Int64.Type}, {\"quarter\", Int64.Type}}, \"en-US\"),",
-                "    Distinct = Table.Distinct(Typed, {\"period_date\"})",
-                "in",
-                "    Distinct"
-              ]
-            }
-          }
-        ]
-      }
-    ],
-    "relationships": [
-      {
-        "name": "rel_fact_date",
-        "fromTable": "fact_material_price",
-        "fromColumn": "period_date",
-        "toTable": "dim_date",
-        "toColumn": "period_date"
-      },
-      {
-        "name": "rel_fact_region",
-        "fromTable": "fact_material_price",
-        "fromColumn": "region",
-        "toTable": "dim_region",
-        "toColumn": "region"
-      },
-      {
-        "name": "rel_fact_material",
-        "fromTable": "fact_material_price",
-        "fromColumn": "item_name",
-        "toTable": "dim_material",
-        "toColumn": "item_name"
-      }
-    ],
     "annotations": [
       {
         "name": "__PBI_TimeIntelligenceEnabled",
         "value": "0"
+      },
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"fact_price_history\"]"
+      },
+      {
+        "name": "PBI_ProTooling",
+        "value": "[\"DevMode\"]"
+      }
+    ],
+    "culture": "zh-TW",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "zh-TW",
+    "tables": [
+      {
+        "name": "fact_price_history",
+        "lineageTag": "a80c3374-d4fa-44eb-b6d4-5411677bbb9b",
+        "columns": [
+          {
+            "name": "period",
+            "dataType": "string",
+            "lineageTag": "23067c3e-918b-461d-9168-e5a3532669c7",
+            "sourceColumn": "period",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "period_roc",
+            "dataType": "string",
+            "lineageTag": "a43d62ef-31c6-45c9-9185-8ec8d20dcf88",
+            "sourceColumn": "period_roc",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "period_date",
+            "dataType": "dateTime",
+            "lineageTag": "49f5780e-2e83-4a40-9646-68dd5da3a6ba",
+            "sourceColumn": "period_date",
+            "summarizeBy": "none",
+            "formatString": "yyyy-MM-dd",
+            "annotations": [
+              {
+                "name": "UnderlyingDateTimeDataType",
+                "value": "Date"
+              }
+            ]
+          },
+          {
+            "name": "material",
+            "dataType": "string",
+            "lineageTag": "f46f9751-7419-48c5-9838-7fef3477cc97",
+            "sourceColumn": "material",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "item_name",
+            "dataType": "string",
+            "lineageTag": "9743c687-c203-4066-8dc1-138e6ce82f14",
+            "sourceColumn": "item_name",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "unit",
+            "dataType": "string",
+            "lineageTag": "ea39dfbc-6165-4f09-8de1-6567c2bbd202",
+            "sourceColumn": "unit",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "region",
+            "dataType": "string",
+            "lineageTag": "79e312d7-3b0e-4315-bfc6-727c4986cb25",
+            "sourceColumn": "region",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "region_group",
+            "dataType": "string",
+            "lineageTag": "5799d9b2-887e-41e2-8996-95e4c40d554d",
+            "sourceColumn": "region_group",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "region_level",
+            "dataType": "string",
+            "lineageTag": "57041f4f-f7c3-41d0-81da-fcd12ae4d424",
+            "sourceColumn": "region_level",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "price",
+            "dataType": "double",
+            "lineageTag": "32bc45be-f7a1-4dbf-a9bd-ac82c4357fcc",
+            "sourceColumn": "price",
+            "summarizeBy": "none",
+            "formatString": "#,0"
+          },
+          {
+            "name": "price_min",
+            "dataType": "double",
+            "lineageTag": "4b119f5e-cd65-4301-86e6-8e6ddc0a1422",
+            "sourceColumn": "price_min",
+            "summarizeBy": "none",
+            "formatString": "#,0"
+          },
+          {
+            "name": "price_max",
+            "dataType": "double",
+            "lineageTag": "fb89a936-af6b-4c49-aee7-21bb805339dd",
+            "sourceColumn": "price_max",
+            "summarizeBy": "none",
+            "formatString": "#,0"
+          },
+          {
+            "name": "price_basis",
+            "dataType": "string",
+            "lineageTag": "abfaea7d-3734-4535-b98f-61e6bd4947fc",
+            "sourceColumn": "price_basis",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "source_dataset",
+            "dataType": "string",
+            "lineageTag": "4d03c490-5e14-4beb-ac86-170f4ae63d88",
+            "sourceColumn": "source_dataset",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "source_file",
+            "dataType": "string",
+            "lineageTag": "84661771-a010-4143-8394-3e40936bda71",
+            "sourceColumn": "source_file",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "材料組",
+            "dataType": "string",
+            "lineageTag": "282f8765-1d2f-45b2-b6f7-553977526605",
+            "sourceColumn": "材料組",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "規格",
+            "dataType": "string",
+            "lineageTag": "aa0200d1-1d19-40cd-83ea-d5c2aeba45fe",
+            "sourceColumn": "規格",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "材料規格",
+            "dataType": "string",
+            "lineageTag": "b2ebb724-6504-4061-bdc8-c75d273570f8",
+            "sourceColumn": "材料規格",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "年月碼",
+            "dataType": "int64",
+            "formatString": "0",
+            "lineageTag": "526643df-2c45-4dcc-a0d7-e1c77e08565b",
+            "sourceColumn": "年月碼",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "measures": [
+          {
+            "name": "平均單價",
+            "expression": "AVERAGE(fact_price_history[price])",
+            "lineageTag": "b7a16612-72f8-40db-a38d-f5ae622d8cd9",
+            "formatString": "#,0"
+          },
+          {
+            "name": "_最新期",
+            "expression": "CALCULATE(MAX(fact_price_history[period_date]), ALL(fact_price_history))",
+            "lineageTag": "59c016f4-54a0-4a89-90ca-398ebd39eca7",
+            "isHidden": true
+          },
+          {
+            "name": "鋼筋均價",
+            "expression": "CALCULATE([平均單價], fact_price_history[material]=\"鋼筋\")",
+            "lineageTag": "5b87b308-cb47-4341-9dad-d793e2c3805b",
+            "formatString": "#,0"
+          },
+          {
+            "name": "H型鋼均價",
+            "expression": "CALCULATE([平均單價], fact_price_history[material]=\"H型鋼\")",
+            "lineageTag": "6ee3683b-7296-492d-84c6-1ab3be6320b1",
+            "formatString": "#,0"
+          },
+          {
+            "name": "鋼板均價",
+            "expression": "CALCULATE([平均單價], fact_price_history[material]=\"鋼板\")",
+            "lineageTag": "a94a57d9-60bf-4031-a433-15aa106cb851",
+            "formatString": "#,0"
+          },
+          {
+            "name": "預拌均價",
+            "expression": "CALCULATE([平均單價], fact_price_history[material]=\"預拌混凝土\")",
+            "lineageTag": "2ec4930b-c112-4a8c-b6f7-3762574b2f7d",
+            "formatString": "#,0"
+          },
+          {
+            "name": "瀝青均價",
+            "expression": "CALCULATE([平均單價], fact_price_history[material]=\"瀝青混凝土\")",
+            "lineageTag": "14850948-d003-4aaa-ad3f-6084bfcdf54a",
+            "formatString": "#,0"
+          },
+          {
+            "name": "鋼筋現價",
+            "expression": "VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]=\"鋼筋\", fact_price_history[period_date]=d)",
+            "lineageTag": "f3002299-8a46-493a-bdad-061f8d91a7c3",
+            "formatString": "#,0"
+          },
+          {
+            "name": "瀝青現價",
+            "expression": "VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]=\"瀝青混凝土\", fact_price_history[period_date]=d)",
+            "lineageTag": "122fe734-8def-487c-a7cb-3e9258df9db1",
+            "formatString": "#,0"
+          },
+          {
+            "name": "預拌現價",
+            "expression": "VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]=\"預拌混凝土\", fact_price_history[period_date]=d)",
+            "lineageTag": "fb899937-25dc-46b1-abbd-db4704f38dab",
+            "formatString": "#,0"
+          },
+          {
+            "name": "H型鋼現價",
+            "expression": "VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]=\"H型鋼\", fact_price_history[period_date]=d)",
+            "lineageTag": "12e078e2-3dae-45f9-a3cf-1294ca02bf3c",
+            "formatString": "#,0"
+          },
+          {
+            "name": "鋼筋年漲跌",
+            "expression": "VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]=\"鋼筋\",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]=\"鋼筋\",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)",
+            "lineageTag": "77ba145e-ed08-454b-bf6b-ae7a2ddbba59",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "瀝青年漲跌",
+            "expression": "VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]=\"瀝青混凝土\",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]=\"瀝青混凝土\",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)",
+            "lineageTag": "0437f259-50ed-4da8-8f8a-159715286797",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "預拌年漲跌",
+            "expression": "VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]=\"預拌混凝土\",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]=\"預拌混凝土\",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)",
+            "lineageTag": "18be032d-3fc4-4a46-838a-a88cef3a1c5e",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "H型鋼年漲跌",
+            "expression": "VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]=\"H型鋼\",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]=\"H型鋼\",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)",
+            "lineageTag": "2cc09709-0953-4a8e-aa02-02937375a0d3",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "年漲跌",
+            "expression": "VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)",
+            "lineageTag": "33b098bd-cdd9-4ed4-8bce-cf63b2858bfd",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "_選月數",
+            "expression": "SELECTEDVALUE(期間選項[月數], 9999)",
+            "lineageTag": "af114894-8d59-4eb1-b4c2-191982ed6d0c",
+            "isHidden": true
+          },
+          {
+            "name": "在範圍內",
+            "expression": "VAR sel=[_選月數] VAR d=[_最新期] RETURN IF(sel>=9999, 1, IF(MAX(fact_price_history[period_date]) > EDATE(d, -sel), 1, 0))",
+            "lineageTag": "95937c2d-f312-44d6-ba54-bb9ccc14ffcf",
+            "isHidden": true
+          },
+          {
+            "name": "鋼筋均價R",
+            "expression": "IF([在範圍內]=1, [鋼筋均價])",
+            "formatString": "#,0",
+            "lineageTag": "21d2d481-0694-41ae-8e05-300c964b1ecb"
+          },
+          {
+            "name": "H型鋼均價R",
+            "expression": "IF([在範圍內]=1, [H型鋼均價])",
+            "formatString": "#,0",
+            "lineageTag": "7f83715d-28eb-473e-b349-d3b9a5c3b8df"
+          },
+          {
+            "name": "鋼板均價R",
+            "expression": "IF([在範圍內]=1, [鋼板均價])",
+            "formatString": "#,0",
+            "lineageTag": "7dc04fb5-ed45-42dd-b812-6189736b2bae"
+          },
+          {
+            "name": "預拌均價R",
+            "expression": "IF([在範圍內]=1, [預拌均價])",
+            "formatString": "#,0",
+            "lineageTag": "2aa726b6-fc89-458b-8361-64ae55720122"
+          },
+          {
+            "name": "瀝青均價R",
+            "expression": "IF([在範圍內]=1, [瀝青均價])",
+            "formatString": "#,0",
+            "lineageTag": "aca89225-d87f-4eb8-a478-9be1169564fe"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "fact_price_history",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    HSrc = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/history/material_price_history.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
+                "    HP = Table.PromoteHeaders(HSrc, [PromoteAllScalars = true]),",
+                "    HT = Table.TransformColumnTypes(HP, {{\"period_date\", type date}, {\"price\", type number}, {\"price_min\", type number}, {\"price_max\", type number}}, \"en-US\"),",
+                "    代表 = Table.SelectRows(HT, each ((([material]=\"鋼筋\" and ((Text.Contains([item_name],\"SD280\") and Text.Contains([item_name],\"D10\")) or (Text.Contains([item_name],\"SD420\") and Text.Contains([item_name],\"D36\")))) or ([material]=\"預拌混凝土\" and (Text.Contains([item_name],\"210kgf\") or Text.Contains([item_name],\"280kgf\"))) or ([material]=\"瀝青混凝土\" and ((Text.Contains([item_name],\"粗級配\") and Text.Contains([item_name],\"25mm\")) or (Text.Contains([item_name],\"密級配\") and Text.Contains([item_name],\"19mm\")))) or ([material]=\"H型鋼\" and Text.Contains([item_name],\"H400\")) or ([material]=\"鋼板\" and Text.Contains([item_name],\"A36\"))))),",
+                "    HS = Table.SelectColumns(代表, {\"period\",\"period_roc\",\"period_date\",\"material\",\"item_name\",\"unit\",\"region\",\"region_group\",\"region_level\",\"price\",\"price_min\",\"price_max\",\"price_basis\"}),",
+                "    加材料組 = Table.AddColumn(HS, \"材料組\", each if List.Contains({\"鋼筋\",\"H型鋼\",\"鋼板\"}, [material]) then \"鋼材\" else \"混凝土瀝青\", type text),",
+                "    加規格 = Table.AddColumn(加材料組, \"規格\", each if Text.Contains([item_name],\"SD280\") then \"SD280\" else if Text.Contains([item_name],\"SD420\") then \"SD420\" else if Text.Contains([item_name],\"210kgf\") then \"210\" else if Text.Contains([item_name],\"280kgf\") then \"280\" else if (Text.Contains([item_name],\"粗級配\") and Text.Contains([item_name],\"25mm\")) then \"粗25\" else if (Text.Contains([item_name],\"密級配\") and Text.Contains([item_name],\"19mm\")) then \"密19\" else if Text.Contains([item_name],\"A36\") then \"A36\" else if Text.Contains([item_name],\"H型鋼\") then \"H400\" else [material], type text),",
+                "    去重 = Table.Distinct(加規格, {\"period\",\"material\",\"規格\",\"region_group\"}),",
+                "    加材料規格 = Table.AddColumn(去重, \"材料規格\", each [material] & \" \" & [規格], type text),",
+                "    加年月碼 = Table.AddColumn(加材料規格, \"年月碼\", each Date.Year([period_date])*100 + Date.Month([period_date]), Int64.Type)",
+                "in",
+                "    加年月碼"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "期間選項",
+        "lineageTag": "eab81ed6-d3f6-4e46-afd8-292ccab23616",
+        "columns": [
+          {
+            "name": "選項",
+            "dataType": "string",
+            "lineageTag": "16b50e59-622f-4d27-bde5-f29154c4f6a4",
+            "sourceColumn": "[選項]",
+            "type": "calculatedTableColumn",
+            "summarizeBy": "none",
+            "sortByColumn": "排序"
+          },
+          {
+            "name": "月數",
+            "dataType": "int64",
+            "lineageTag": "2ad13513-94c9-4925-9093-14659a7663da",
+            "sourceColumn": "[月數]",
+            "type": "calculatedTableColumn",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "排序",
+            "dataType": "int64",
+            "lineageTag": "d5a71e7b-a001-4de1-878e-d6ef198c1b06",
+            "sourceColumn": "[排序]",
+            "type": "calculatedTableColumn",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "期間選項",
+            "mode": "import",
+            "source": {
+              "type": "calculated",
+              "expression": "DATATABLE(\"選項\", STRING, \"月數\", INTEGER, \"排序\", INTEGER, {{\"近1月\",1,1},{\"近1年\",12,2},{\"近3年\",36,3},{\"全期\",9999,4}})"
+            }
+          }
+        ]
       }
     ]
   }
