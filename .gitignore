@@ -23,5 +23,6 @@ data/history/pdf/
 
 # 價格趨勢 PDF 原始檔（fetch_pdf 下載的 6 系列、約 900 檔、體積大、屬公開資料）
 # 保留本機作為 raw 封存，不推 GitHub；遺失可隨時以 src/fetch_pdf.py 重抓。
-# 僅 _manifest.json（下載清單/雜湊）入庫。轉出的 history CSV 亦入庫。
-data/raw/pdf/**/*.pdf
+# _manifest.json 亦為本機中繼資料（每次執行更新時間戳，且冪等判斷靠檔案存在而非它）。
+# 入庫的只有轉出的 data/history/material_price_history.csv。
+data/raw/pdf/
