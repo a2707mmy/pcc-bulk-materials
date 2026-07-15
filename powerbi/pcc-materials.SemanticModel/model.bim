@@ -25,7 +25,6 @@
     "tables": [
       {
         "name": "fact_price_history",
-        "lineageTag": "a80c3374-d4fa-44eb-b6d4-5411677bbb9b",
         "columns": [
           {
             "name": "period",
@@ -43,17 +42,17 @@
           },
           {
             "name": "period_date",
-            "dataType": "dateTime",
-            "lineageTag": "49f5780e-2e83-4a40-9646-68dd5da3a6ba",
-            "sourceColumn": "period_date",
-            "summarizeBy": "none",
-            "formatString": "yyyy-MM-dd",
             "annotations": [
               {
                 "name": "UnderlyingDateTimeDataType",
                 "value": "Date"
               }
-            ]
+            ],
+            "dataType": "dateTime",
+            "formatString": "yyyy-MM-dd",
+            "lineageTag": "49f5780e-2e83-4a40-9646-68dd5da3a6ba",
+            "sourceColumn": "period_date",
+            "summarizeBy": "none"
           },
           {
             "name": "material",
@@ -100,46 +99,32 @@
           {
             "name": "price",
             "dataType": "double",
+            "formatString": "#,0",
             "lineageTag": "32bc45be-f7a1-4dbf-a9bd-ac82c4357fcc",
             "sourceColumn": "price",
-            "summarizeBy": "none",
-            "formatString": "#,0"
+            "summarizeBy": "none"
           },
           {
             "name": "price_min",
             "dataType": "double",
+            "formatString": "#,0",
             "lineageTag": "4b119f5e-cd65-4301-86e6-8e6ddc0a1422",
             "sourceColumn": "price_min",
-            "summarizeBy": "none",
-            "formatString": "#,0"
+            "summarizeBy": "none"
           },
           {
             "name": "price_max",
             "dataType": "double",
+            "formatString": "#,0",
             "lineageTag": "fb89a936-af6b-4c49-aee7-21bb805339dd",
             "sourceColumn": "price_max",
-            "summarizeBy": "none",
-            "formatString": "#,0"
+            "summarizeBy": "none"
           },
           {
             "name": "price_basis",
             "dataType": "string",
             "lineageTag": "abfaea7d-3734-4535-b98f-61e6bd4947fc",
             "sourceColumn": "price_basis",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "source_dataset",
-            "dataType": "string",
-            "lineageTag": "4d03c490-5e14-4beb-ac86-170f4ae63d88",
-            "sourceColumn": "source_dataset",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "source_file",
-            "dataType": "string",
-            "lineageTag": "84661771-a010-4143-8394-3e40936bda71",
-            "sourceColumn": "source_file",
             "summarizeBy": "none"
           },
           {
@@ -167,120 +152,121 @@
             "name": "年月碼",
             "dataType": "int64",
             "formatString": "0",
+            "isHidden": true,
             "lineageTag": "526643df-2c45-4dcc-a0d7-e1c77e08565b",
             "sourceColumn": "年月碼",
-            "summarizeBy": "none",
-            "isHidden": true
+            "summarizeBy": "none"
           }
         ],
+        "lineageTag": "a80c3374-d4fa-44eb-b6d4-5411677bbb9b",
         "measures": [
           {
             "name": "平均單價",
             "expression": "AVERAGE(fact_price_history[price])",
-            "lineageTag": "b7a16612-72f8-40db-a38d-f5ae622d8cd9",
-            "formatString": "#,0"
+            "formatString": "#,0",
+            "lineageTag": "b7a16612-72f8-40db-a38d-f5ae622d8cd9"
           },
           {
             "name": "_最新期",
             "expression": "CALCULATE(MAX(fact_price_history[period_date]), ALL(fact_price_history))",
-            "lineageTag": "59c016f4-54a0-4a89-90ca-398ebd39eca7",
-            "isHidden": true
+            "isHidden": true,
+            "lineageTag": "59c016f4-54a0-4a89-90ca-398ebd39eca7"
           },
           {
             "name": "鋼筋均價",
             "expression": "CALCULATE([平均單價], fact_price_history[material]=\"鋼筋\")",
-            "lineageTag": "5b87b308-cb47-4341-9dad-d793e2c3805b",
-            "formatString": "#,0"
+            "formatString": "#,0",
+            "lineageTag": "5b87b308-cb47-4341-9dad-d793e2c3805b"
           },
           {
             "name": "H型鋼均價",
             "expression": "CALCULATE([平均單價], fact_price_history[material]=\"H型鋼\")",
-            "lineageTag": "6ee3683b-7296-492d-84c6-1ab3be6320b1",
-            "formatString": "#,0"
+            "formatString": "#,0",
+            "lineageTag": "6ee3683b-7296-492d-84c6-1ab3be6320b1"
           },
           {
             "name": "鋼板均價",
             "expression": "CALCULATE([平均單價], fact_price_history[material]=\"鋼板\")",
-            "lineageTag": "a94a57d9-60bf-4031-a433-15aa106cb851",
-            "formatString": "#,0"
+            "formatString": "#,0",
+            "lineageTag": "a94a57d9-60bf-4031-a433-15aa106cb851"
           },
           {
             "name": "預拌均價",
             "expression": "CALCULATE([平均單價], fact_price_history[material]=\"預拌混凝土\")",
-            "lineageTag": "2ec4930b-c112-4a8c-b6f7-3762574b2f7d",
-            "formatString": "#,0"
+            "formatString": "#,0",
+            "lineageTag": "2ec4930b-c112-4a8c-b6f7-3762574b2f7d"
           },
           {
             "name": "瀝青均價",
             "expression": "CALCULATE([平均單價], fact_price_history[material]=\"瀝青混凝土\")",
-            "lineageTag": "14850948-d003-4aaa-ad3f-6084bfcdf54a",
-            "formatString": "#,0"
+            "formatString": "#,0",
+            "lineageTag": "14850948-d003-4aaa-ad3f-6084bfcdf54a"
           },
           {
             "name": "鋼筋現價",
             "expression": "VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]=\"鋼筋\", fact_price_history[period_date]=d)",
-            "lineageTag": "f3002299-8a46-493a-bdad-061f8d91a7c3",
-            "formatString": "#,0"
+            "formatString": "#,0",
+            "lineageTag": "f3002299-8a46-493a-bdad-061f8d91a7c3"
           },
           {
             "name": "瀝青現價",
             "expression": "VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]=\"瀝青混凝土\", fact_price_history[period_date]=d)",
-            "lineageTag": "122fe734-8def-487c-a7cb-3e9258df9db1",
-            "formatString": "#,0"
+            "formatString": "#,0",
+            "lineageTag": "122fe734-8def-487c-a7cb-3e9258df9db1"
           },
           {
             "name": "預拌現價",
             "expression": "VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]=\"預拌混凝土\", fact_price_history[period_date]=d)",
-            "lineageTag": "fb899937-25dc-46b1-abbd-db4704f38dab",
-            "formatString": "#,0"
+            "formatString": "#,0",
+            "lineageTag": "fb899937-25dc-46b1-abbd-db4704f38dab"
           },
           {
             "name": "H型鋼現價",
             "expression": "VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]=\"H型鋼\", fact_price_history[period_date]=d)",
-            "lineageTag": "12e078e2-3dae-45f9-a3cf-1294ca02bf3c",
-            "formatString": "#,0"
+            "formatString": "#,0",
+            "lineageTag": "12e078e2-3dae-45f9-a3cf-1294ca02bf3c"
           },
           {
             "name": "鋼筋年漲跌",
             "expression": "VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]=\"鋼筋\",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]=\"鋼筋\",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)",
-            "lineageTag": "77ba145e-ed08-454b-bf6b-ae7a2ddbba59",
-            "formatString": "0.0%"
+            "formatString": "0.0%",
+            "lineageTag": "77ba145e-ed08-454b-bf6b-ae7a2ddbba59"
           },
           {
             "name": "瀝青年漲跌",
             "expression": "VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]=\"瀝青混凝土\",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]=\"瀝青混凝土\",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)",
-            "lineageTag": "0437f259-50ed-4da8-8f8a-159715286797",
-            "formatString": "0.0%"
+            "formatString": "0.0%",
+            "lineageTag": "0437f259-50ed-4da8-8f8a-159715286797"
           },
           {
             "name": "預拌年漲跌",
             "expression": "VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]=\"預拌混凝土\",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]=\"預拌混凝土\",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)",
-            "lineageTag": "18be032d-3fc4-4a46-838a-a88cef3a1c5e",
-            "formatString": "0.0%"
+            "formatString": "0.0%",
+            "lineageTag": "18be032d-3fc4-4a46-838a-a88cef3a1c5e"
           },
           {
             "name": "H型鋼年漲跌",
             "expression": "VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]=\"H型鋼\",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]=\"H型鋼\",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)",
-            "lineageTag": "2cc09709-0953-4a8e-aa02-02937375a0d3",
-            "formatString": "0.0%"
+            "formatString": "0.0%",
+            "lineageTag": "2cc09709-0953-4a8e-aa02-02937375a0d3"
           },
           {
             "name": "年漲跌",
             "expression": "VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)",
-            "lineageTag": "33b098bd-cdd9-4ed4-8bce-cf63b2858bfd",
-            "formatString": "0.0%"
+            "formatString": "0.0%",
+            "lineageTag": "33b098bd-cdd9-4ed4-8bce-cf63b2858bfd"
           },
           {
             "name": "_選月數",
             "expression": "SELECTEDVALUE(期間選項[月數], 9999)",
-            "lineageTag": "af114894-8d59-4eb1-b4c2-191982ed6d0c",
-            "isHidden": true
+            "isHidden": true,
+            "lineageTag": "af114894-8d59-4eb1-b4c2-191982ed6d0c"
           },
           {
             "name": "在範圍內",
             "expression": "VAR sel=[_選月數] VAR d=[_最新期] RETURN IF(sel>=9999, 1, IF(MAX(fact_price_history[period_date]) > EDATE(d, -sel), 1, 0))",
-            "lineageTag": "95937c2d-f312-44d6-ba54-bb9ccc14ffcf",
-            "isHidden": true
+            "isHidden": true,
+            "lineageTag": "95937c2d-f312-44d6-ba54-bb9ccc14ffcf"
           },
           {
             "name": "鋼筋均價R",
@@ -318,7 +304,6 @@
             "name": "fact_price_history",
             "mode": "import",
             "source": {
-              "type": "m",
               "expression": [
                 "let",
                 "    HSrc = Csv.Document(Web.Contents(\"https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/history/material_price_history.csv\"), [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),",
@@ -333,48 +318,52 @@
                 "    加年月碼 = Table.AddColumn(加材料規格, \"年月碼\", each Date.Year([period_date])*100 + Date.Month([period_date]), Int64.Type)",
                 "in",
                 "    加年月碼"
-              ]
+              ],
+              "type": "m"
             }
           }
         ]
       },
       {
         "name": "期間選項",
-        "lineageTag": "eab81ed6-d3f6-4e46-afd8-292ccab23616",
         "columns": [
           {
             "name": "選項",
             "dataType": "string",
+            "isNameInferred": false,
             "lineageTag": "16b50e59-622f-4d27-bde5-f29154c4f6a4",
+            "sortByColumn": "排序",
             "sourceColumn": "[選項]",
-            "type": "calculatedTableColumn",
             "summarizeBy": "none",
-            "sortByColumn": "排序"
+            "type": "calculatedTableColumn"
           },
           {
             "name": "月數",
             "dataType": "int64",
+            "isNameInferred": false,
             "lineageTag": "2ad13513-94c9-4925-9093-14659a7663da",
             "sourceColumn": "[月數]",
-            "type": "calculatedTableColumn",
-            "summarizeBy": "none"
+            "summarizeBy": "none",
+            "type": "calculatedTableColumn"
           },
           {
             "name": "排序",
             "dataType": "int64",
+            "isNameInferred": false,
             "lineageTag": "d5a71e7b-a001-4de1-878e-d6ef198c1b06",
             "sourceColumn": "[排序]",
-            "type": "calculatedTableColumn",
-            "summarizeBy": "none"
+            "summarizeBy": "none",
+            "type": "calculatedTableColumn"
           }
         ],
+        "lineageTag": "eab81ed6-d3f6-4e46-afd8-292ccab23616",
         "partitions": [
           {
             "name": "期間選項",
             "mode": "import",
             "source": {
-              "type": "calculated",
-              "expression": "DATATABLE(\"選項\", STRING, \"月數\", INTEGER, \"排序\", INTEGER, {{\"近1月\",1,1},{\"近1年\",12,2},{\"近3年\",36,3},{\"全期\",9999,4}})"
+              "expression": "DATATABLE(\"選項\", STRING, \"月數\", INTEGER, \"排序\", INTEGER, {{\"近1月\",1,1},{\"近1年\",12,2},{\"近3年\",36,3},{\"全期\",9999,4}})",
+              "type": "calculated"
             }
           }
         ]

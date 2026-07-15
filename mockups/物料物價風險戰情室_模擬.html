@@ -1,0 +1,584 @@
+<title>大宗物料物價風險戰情室 — 版面模擬</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  color-scheme: light;
+  --plane:#eaeef3; --surface:#ffffff; --sunken:#f4f6f9; --raised:#ffffff;
+  --ink:#101620; --ink2:#5a6472; --muted:#8a93a0;
+  --line:#e3e7ec; --hair:rgba(16,22,32,.08); --baseline:#c7ccd3;
+  --accent:#2f4b8f; --accent-soft:#e8edf7;
+  --rise:#d03b3b; --rise-soft:#fbeaea; --warn:#c8860a; --warn-soft:#fcf3e2; --fall:#0f8a3c; --fall-soft:#e7f4ec;
+  --m-steel:#2a78d6; --m-hbeam:#c85f89; --m-plate:#1baf7a; --m-concrete:#008300; --m-asphalt:#c07f00; --m-sand:#4a3aa7;
+  --shadow:0 1px 2px rgba(16,22,32,.06),0 4px 16px rgba(16,22,32,.05);
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){
+  color-scheme:dark;
+  --plane:#0c0f14; --surface:#161b22; --sunken:#1b212b; --raised:#1c232e;
+  --ink:#eef2f7; --ink2:#aab4c1; --muted:#7b8592;
+  --line:#262d38; --hair:rgba(255,255,255,.09); --baseline:#3a424e;
+  --accent:#7a99e6; --accent-soft:#1e2740;
+  --rise:#f0605f; --rise-soft:#331a1c; --warn:#f0b23a; --warn-soft:#2e2411; --fall:#3fc06a; --fall-soft:#122a1b;
+  --m-steel:#3987e5; --m-hbeam:#d55181; --m-plate:#199e70; --m-concrete:#4fae4f; --m-asphalt:#d99f2e; --m-sand:#9085e9;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --plane:#0c0f14; --surface:#161b22; --sunken:#1b212b; --raised:#1c232e;
+  --ink:#eef2f7; --ink2:#aab4c1; --muted:#7b8592;
+  --line:#262d38; --hair:rgba(255,255,255,.09); --baseline:#3a424e;
+  --accent:#7a99e6; --accent-soft:#1e2740;
+  --rise:#f0605f; --rise-soft:#331a1c; --warn:#f0b23a; --warn-soft:#2e2411; --fall:#3fc06a; --fall-soft:#122a1b;
+  --m-steel:#3987e5; --m-hbeam:#d55181; --m-plate:#199e70; --m-concrete:#4fae4f; --m-asphalt:#d99f2e; --m-sand:#9085e9;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+.num{font-variant-numeric:tabular-nums;}
+h1,h2,h3{margin:0;font-weight:650;letter-spacing:-.01em;}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);}
+
+/* ---- header ---- */
+header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--surface) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+.bar{max-width:1200px;margin:0 auto;padding:11px 20px;display:flex;align-items:center;gap:18px;}
+.brand{display:flex;align-items:center;gap:11px;}
+.logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#111));
+  display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px;box-shadow:var(--shadow);}
+.brand b{font-size:15.5px;font-weight:700;letter-spacing:-.02em;}
+.brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:.02em;}
+nav{display:flex;gap:3px;margin-left:6px;background:var(--sunken);padding:4px;border-radius:11px;}
+nav button{font:inherit;font-size:13.5px;font-weight:600;border:0;background:transparent;color:var(--ink2);
+  padding:7px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:.15s;}
+nav button:hover{color:var(--ink);}
+nav button[aria-selected="true"]{background:var(--surface);color:var(--accent);box-shadow:var(--shadow);}
+.spacer{flex:1}
+.asof{font-size:12px;color:var(--ink2);text-align:right;line-height:1.35;}
+.asof b{color:var(--ink);font-weight:700}
+.tbtn{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--ink2);
+  width:34px;height:34px;border-radius:9px;cursor:pointer;}
+.tbtn:hover{color:var(--ink);border-color:var(--baseline)}
+
+main{max-width:1200px;margin:0 auto;padding:22px 20px 60px;}
+.panel{display:none}.panel.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);}
+.pad{padding:16px 18px}
+.grid{display:grid;gap:16px}
+.chead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:2px}
+.chead h3{font-size:15px}
+.chead .sub{font-size:12px;color:var(--muted)}
+
+/* ---- risk banner ---- */
+.banner{display:flex;align-items:center;gap:18px;padding:18px 20px;border-radius:var(--r);
+  background:linear-gradient(100deg,var(--rise-soft),color-mix(in srgb,var(--rise-soft) 40%,var(--surface)));
+  border:1px solid color-mix(in srgb,var(--rise) 32%,var(--line));box-shadow:var(--shadow);}
+.banner .dot{flex:none;width:46px;height:46px;border-radius:12px;background:var(--rise);color:#fff;
+  display:grid;place-items:center;font-size:24px;box-shadow:0 4px 14px color-mix(in srgb,var(--rise) 40%,transparent)}
+.banner h2{font-size:18px}
+.banner p{margin:3px 0 0;color:var(--ink2);font-size:13px}
+.banner .big{margin-left:auto;text-align:right}
+.banner .big .n{font-size:30px;font-weight:750;color:var(--rise);letter-spacing:-.02em}
+.banner .big .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+/* ---- pressure cards ---- */
+.cards{grid-template-columns:repeat(6,1fr)}
+@media(max-width:1080px){.cards{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.cards{grid-template-columns:repeat(2,1fr)}}
+.mcard{position:relative;overflow:hidden}
+.mcard .top{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.swatch{width:10px;height:10px;border-radius:3px;flex:none}
+.mcard .name{font-size:13px;font-weight:650}
+.mcard .price{font-size:22px;font-weight:730;letter-spacing:-.02em;line-height:1.1}
+.mcard .unit{font-size:11px;color:var(--muted);font-weight:500}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:700;
+  padding:2px 7px;border-radius:20px;line-height:1.4}
+.badge.up{background:var(--rise-soft);color:var(--rise)}
+.badge.dn{background:var(--fall-soft);color:var(--fall)}
+.badge.fl{background:var(--sunken);color:var(--ink2)}
+.spark{margin-top:10px;height:38px;width:100%}
+.mcard .foot{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--muted)}
+
+/* chips / toggles */
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink2);padding:5px 12px;border-radius:20px;cursor:pointer;transition:.12s}
+.chip:hover{border-color:var(--baseline);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px}
+.lg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;user-select:none}
+.lg .swatch{width:12px;height:3px;border-radius:2px}
+.lg.off{opacity:.35}
+
+svg.chart{display:block;width:100%;height:auto;overflow:visible}
+.axis{fill:var(--muted);font-size:10.5px}
+.gridln{stroke:var(--line);stroke-width:1}
+.baseln{stroke:var(--baseline);stroke-width:1}
+.zero{stroke:var(--baseline);stroke-width:1.5;stroke-dasharray:2 3}
+.lbl{font-size:11px;font-weight:700}
+.tip{position:absolute;pointer-events:none;z-index:40;background:var(--raised);border:1px solid var(--line);
+  border-radius:10px;box-shadow:var(--shadow);padding:9px 11px;font-size:12px;min-width:150px;opacity:0;transition:opacity .1s}
+.tip .th{font-weight:700;margin-bottom:5px;font-size:11.5px;color:var(--ink2)}
+.tip .tr{display:flex;align-items:center;gap:7px;justify-content:space-between;margin:2px 0}
+.tip .tr .k{display:flex;align-items:center;gap:6px;color:var(--ink2)}
+.tip .tr .v{font-weight:700;font-variant-numeric:tabular-nums}
+.tip .sw{width:9px;height:9px;border-radius:3px;flex:none}
+
+/* movers */
+.movers{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.movers{grid-template-columns:1fr}}
+.mv h4{font-size:12px;margin:0 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.mvrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)}
+.mvrow .nm{font-weight:600;font-size:13px}
+.mvrow .bar{flex:1;height:7px;border-radius:4px;background:var(--sunken);overflow:hidden}
+.mvrow .bar i{display:block;height:100%;border-radius:4px}
+.mvrow .pct{font-weight:750;font-size:13px;width:58px;text-align:right;font-variant-numeric:tabular-nums}
+
+/* ---- tab2 recost ---- */
+.recost{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start}
+@media(max-width:900px){.recost{grid-template-columns:1fr}}
+.proj{display:flex;flex-direction:column;gap:8px}
+.projbtn{text-align:left;font:inherit;border:1px solid var(--line);background:var(--surface);border-radius:11px;
+  padding:11px 13px;cursor:pointer;transition:.12s}
+.projbtn:hover{border-color:var(--baseline)}
+.projbtn[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:var(--shadow)}
+.projbtn .pn{font-weight:660;font-size:13.5px}
+.projbtn .pm{font-size:11.5px;color:var(--muted);margin-top:2px;display:flex;gap:8px}
+.pill{font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:20px;background:var(--sunken);color:var(--ink2)}
+.basket{margin-top:4px}
+.basket table{width:100%;border-collapse:collapse}
+.basket th{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;text-align:right;font-weight:700;padding:0 0 6px}
+.basket th:first-child{text-align:left}
+.basket td{padding:6px 0;border-top:1px solid var(--line);font-size:13px;vertical-align:middle}
+.basket td.r{text-align:right;font-variant-numeric:tabular-nums}
+.basket .mm{display:flex;align-items:center;gap:7px;font-weight:600}
+.basket input{width:78px;font:inherit;font-size:13px;text-align:right;font-variant-numeric:tabular-nums;
+  border:1px solid var(--line);background:var(--sunken);color:var(--ink);border-radius:7px;padding:4px 7px}
+.basket input:focus{outline:2px solid var(--accent);border-color:transparent}
+.datesel{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:var(--ink2)}
+.datesel select{font:inherit;font-size:12.5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  border-radius:8px;padding:5px 8px}
+
+.stat3{display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:1px;background:var(--line);border-radius:var(--r);overflow:hidden}
+@media(max-width:560px){.stat3{grid-template-columns:1fr}}
+.st{background:var(--surface);padding:15px 17px}
+.st .l{font-size:11.5px;color:var(--muted);font-weight:600}
+.st .v{font-size:26px;font-weight:740;letter-spacing:-.02em;margin-top:3px;font-variant-numeric:tabular-nums}
+.st .s{font-size:11.5px;color:var(--ink2);margin-top:2px}
+.st.hl{background:linear-gradient(120deg,var(--rise-soft),color-mix(in srgb,var(--rise-soft) 30%,var(--surface)))}
+.st.hl .v{color:var(--rise)}
+.st.hlg{background:linear-gradient(120deg,var(--fall-soft),color-mix(in srgb,var(--fall-soft) 30%,var(--surface)))}
+.st.hlg .v{color:var(--fall)}
+
+.reco{display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:var(--r);
+  background:linear-gradient(100deg,var(--accent-soft),color-mix(in srgb,var(--accent-soft) 30%,var(--surface)));
+  border:1px solid color-mix(in srgb,var(--accent) 26%,var(--line))}
+.reco .ic{width:42px;height:42px;flex:none;border-radius:11px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:21px}
+.reco .rv{margin-left:auto;text-align:right}
+.reco .rv .n{font-size:27px;font-weight:750;color:var(--accent);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.reco .rv .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.reco h4{font-size:14.5px;margin:0}
+.reco p{margin:3px 0 0;font-size:12.5px;color:var(--ink2);max-width:52ch}
+
+/* tab3 */
+.detail-head{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.regbars{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+.rb{display:grid;grid-template-columns:42px 1fr 84px;align-items:center;gap:10px}
+.rb .rn{font-size:12.5px;color:var(--ink2);font-weight:600}
+.rb .rt{height:22px;border-radius:6px;background:var(--sunken);overflow:hidden;position:relative}
+.rb .rt i{display:block;height:100%;border-radius:6px}
+.rb .rv{font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border-radius:11px;overflow:hidden;margin-top:2px}
+.mini .m{background:var(--surface);padding:11px 13px}
+.mini .m .l{font-size:11px;color:var(--muted)}
+.mini .m .v{font-size:17px;font-weight:720;margin-top:2px;font-variant-numeric:tabular-nums}
+.foot-note{color:var(--muted);font-size:11.5px;margin-top:10px;line-height:1.6}
+.tablewrap{overflow-x:auto;margin-top:10px}
+table.data{width:100%;border-collapse:collapse;font-size:12.5px}
+table.data th,table.data td{padding:6px 10px;text-align:right;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--line)}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.linktog{font:inherit;font-size:12px;color:var(--accent);background:none;border:0;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px}
+</style>
+
+<header>
+  <div class="bar">
+    <div class="brand">
+      <div class="logo">物</div>
+      <div><b>大宗物料物價風險戰情室</b><span>公共工程材料 · 監看漲勢 × 工程重估</span></div>
+    </div>
+    <nav id="tabs">
+      <button aria-selected="true" data-tab="watch">物價戰情</button>
+      <button aria-selected="false" data-tab="recost">工程重估</button>
+      <button aria-selected="false" data-tab="detail">品項深掘</button>
+    </nav>
+    <div class="spacer"></div>
+    <div class="asof">資料截至 <b id="asof">—</b><br>來源：工程會價格趨勢</div>
+    <button class="tbtn" id="theme" title="切換深/淺色">◐</button>
+  </div>
+</header>
+
+<main>
+  <!-- ============ TAB 1 WATCH ============ -->
+  <section class="panel on" id="watch">
+    <div id="banner"></div>
+    <div class="grid cards" id="pcards" style="margin-top:16px"></div>
+
+    <div class="card pad" style="margin-top:16px">
+      <div class="chead">
+        <div><h3>物料漲跌幅比較</h3><div class="sub" id="cmpSub">相對基準月的累積漲跌（%）— 不同單價品項可同軸比較</div></div>
+        <div class="chips" id="rangeChips">
+          <button class="chip" data-r="12">近1年</button>
+          <button class="chip" aria-pressed="true" data-r="36">近3年</button>
+          <button class="chip" data-r="999">全期</button>
+          <button class="linktog" id="tblTog" style="margin-left:6px">資料表</button>
+        </div>
+      </div>
+      <div class="legend" id="cmpLegend"></div>
+      <div style="position:relative"><div id="cmpChart"></div></div>
+      <div id="cmpTable" style="display:none"></div>
+    </div>
+
+    <div class="card pad" style="margin-top:16px">
+      <div class="chead"><div><h3>誰在漲、誰在跌</h3><div class="sub">近一年變化（YoY），依幅度排序</div></div></div>
+      <div id="movers" style="position:relative"></div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 2 RECOST ============ -->
+  <section class="panel" id="recost">
+    <div class="recost">
+      <div>
+        <div class="card pad">
+          <div class="eyebrow">選擇工程</div>
+          <div class="proj" id="projList" style="margin-top:10px"></div>
+        </div>
+        <div class="card pad" style="margin-top:16px">
+          <div class="eyebrow">用料清單（可調整）</div>
+          <div class="basket" id="basket" style="margin-top:8px"></div>
+          <div class="datesel">原始編列時間
+            <select id="origDate"></select>
+          </div>
+          <div class="foot-note">數量為材料用量（噸 / 立方公尺）。此處試算<b>材料成本</b>，不含工資與其他費用。</div>
+        </div>
+      </div>
+      <div>
+        <div class="stat3" id="stat3"></div>
+        <div class="card pad" style="margin-top:16px">
+          <div class="chead"><div><h3>漲價來自哪些材料</h3><div class="sub">各材料造成的成本增減（今日 vs 原始編列）</div></div></div>
+          <div style="position:relative"><div id="waterfall"></div></div>
+        </div>
+        <div class="card pad" style="margin-top:16px">
+          <div class="chead"><div><h3>同一份用料，成本如何隨物價變動</h3><div class="sub">以此工程用量，回推每月材料總成本</div></div></div>
+          <div style="position:relative"><div id="basketChart"></div></div>
+        </div>
+        <div class="reco" id="reco" style="margin-top:16px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 3 DETAIL ============ -->
+  <section class="panel" id="detail">
+    <div class="detail-head">
+      <span class="eyebrow" style="margin-right:4px">選擇品項</span>
+      <div class="chips" id="matChips"></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1.55fr 1fr;gap:16px" id="detailGrid">
+      <div class="card pad">
+        <div class="chead"><div><h3 id="dTitle">—</h3><div class="sub" id="dSub">實際單價走勢</div></div>
+          <div class="chips" id="dRange">
+            <button class="chip" data-r="12">近1年</button>
+            <button class="chip" data-r="36">近3年</button>
+            <button class="chip" aria-pressed="true" data-r="999">全期</button>
+          </div>
+        </div>
+        <div style="position:relative"><div id="dChart"></div></div>
+        <div class="mini" id="dStats"></div>
+      </div>
+      <div class="card pad">
+        <div class="chead"><div><h3>最新區域價</h3><div class="sub" id="dRegSub">各區成交價</div></div></div>
+        <div id="dReg" style="position:relative"></div>
+        <div class="foot-note" id="dRegNote"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="tip" id="tip"></div>
+
+<script>
+const DATA = {"series": {"H型鋼": [{"p": "103-01", "v": 25400}, {"p": "103-02", "v": 25325}, {"p": "103-03", "v": 25200}, {"p": "103-04", "v": 25200}, {"p": "103-05", "v": 25200}, {"p": "103-06", "v": 25200}, {"p": "103-07", "v": 25200}, {"p": "103-08", "v": 25200}, {"p": "103-09", "v": 25200}, {"p": "103-10", "v": 24000}, {"p": "103-11", "v": 23600}, {"p": "103-12", "v": 22250}, {"p": "104-01", "v": 21700}, {"p": "104-02", "v": 21650}, {"p": "104-03", "v": 21550}, {"p": "104-04", "v": 21100}, {"p": "104-05", "v": 21100}, {"p": "104-06", "v": 20400}, {"p": "104-07", "v": 20175}, {"p": "104-08", "v": 19450}, {"p": "104-09", "v": 19300}, {"p": "104-10", "v": 19000}, {"p": "104-11", "v": 18700}, {"p": "104-12", "v": 18400}, {"p": "105-01", "v": 18350}, {"p": "105-02", "v": 18550}, {"p": "105-03", "v": 18700}, {"p": "105-04", "v": 19075}, {"p": "105-05", "v": 19200}, {"p": "105-06", "v": 19275}, {"p": "105-07", "v": 19300}, {"p": "105-08", "v": 19300}, {"p": "105-09", "v": 19300}, {"p": "105-10", "v": 19100}, {"p": "105-11", "v": 19150}, {"p": "105-12", "v": 20175}, {"p": "106-04", "v": 21650}, {"p": "106-05", "v": 21425}, {"p": "106-06", "v": 21200}, {"p": "106-07", "v": 21350}, {"p": "106-08", "v": 22150}, {"p": "106-09", "v": 22600}, {"p": "106-10", "v": 21625}, {"p": "106-11", "v": 21300}, {"p": "106-12", "v": 21675}, {"p": "107-01", "v": 22175}, {"p": "107-06", "v": 24875}, {"p": "107-07", "v": 25500}, {"p": "107-08", "v": 25500}, {"p": "107-09", "v": 25650}, {"p": "107-10", "v": 25800}, {"p": "107-11", "v": 25600}, {"p": "107-12", "v": 25400}, {"p": "108-01", "v": 25400}, {"p": "108-02", "v": 25450}, {"p": "108-03", "v": 25850}, {"p": "108-04", "v": 25925}, {"p": "108-05", "v": 25800}, {"p": "108-06", "v": 26125}, {"p": "108-07", "v": 25900}, {"p": "108-08", "v": 25900}, {"p": "108-09", "v": 25800}, {"p": "108-10", "v": 25775}, {"p": "108-11", "v": 25800}, {"p": "108-12", "v": 26100}, {"p": "109-01", "v": 26100}, {"p": "109-02", "v": 26100}, {"p": "109-03", "v": 26100}, {"p": "109-04", "v": 23138}, {"p": "109-05", "v": 23023}, {"p": "109-06", "v": 22983}, {"p": "109-07", "v": 23500}, {"p": "109-08", "v": 23350}, {"p": "109-09", "v": 23770}, {"p": "109-10", "v": 24070}, {"p": "109-11", "v": 24307}, {"p": "109-12", "v": 26167}, {"p": "110-01", "v": 28117}, {"p": "110-02", "v": 28261}, {"p": "110-03", "v": 28756}, {"p": "110-04", "v": 29167}, {"p": "110-05", "v": 30597}, {"p": "110-06", "v": 31036}, {"p": "110-07", "v": 31381}, {"p": "110-08", "v": 31756}, {"p": "110-09", "v": 31606}, {"p": "110-10", "v": 31833}, {"p": "110-11", "v": 31728}, {"p": "110-12", "v": 31139}, {"p": "111-01", "v": 30806}, {"p": "111-02", "v": 31200}, {"p": "111-03", "v": 33005}, {"p": "111-04", "v": 33838}, {"p": "111-05", "v": 33479}, {"p": "111-06", "v": 32776}, {"p": "111-07", "v": 32007}, {"p": "111-08", "v": 31362}, {"p": "111-09", "v": 31079}, {"p": "111-10", "v": 30645}, {"p": "111-11", "v": 30200}, {"p": "111-12", "v": 29698}, {"p": "112-01", "v": 30257}, {"p": "112-02", "v": 30750}, {"p": "112-03", "v": 31289}, {"p": "112-04", "v": 31328}, {"p": "112-05", "v": 30717}, {"p": "112-06", "v": 30143}, {"p": "112-07", "v": 29761}, {"p": "112-08", "v": 29405}, {"p": "112-09", "v": 29402}, {"p": "112-10", "v": 29460}, {"p": "112-11", "v": 29238}, {"p": "112-12", "v": 29405}, {"p": "113-01", "v": 29521}, {"p": "113-02", "v": 29710}, {"p": "113-03", "v": 29471}, {"p": "113-04", "v": 28300}, {"p": "113-05", "v": 28007}, {"p": "113-06", "v": 27800}, {"p": "113-07", "v": 27512}, {"p": "113-08", "v": 27333}, {"p": "113-09", "v": 27011}, {"p": "113-10", "v": 27257}, {"p": "113-11", "v": 27257}, {"p": "113-12", "v": 27126}, {"p": "114-01", "v": 26971}, {"p": "114-02", "v": 27290}, {"p": "114-03", "v": 27274}, {"p": "114-04", "v": 27162}, {"p": "114-05", "v": 26957}, {"p": "114-06", "v": 26990}, {"p": "114-07", "v": 26588}, {"p": "114-08", "v": 26467}, {"p": "114-09", "v": 26338}, {"p": "114-10", "v": 26260}, {"p": "114-11", "v": 26093}, {"p": "114-12", "v": 25943}, {"p": "115-01", "v": 26286}, {"p": "115-02", "v": 26767}, {"p": "115-03", "v": 28150}, {"p": "115-04", "v": 28644}, {"p": "115-05", "v": 28972}], "瀝青混凝土": [{"p": "103-01", "v": 2560}, {"p": "103-02", "v": 2560}, {"p": "103-03", "v": 2560}, {"p": "103-04", "v": 2560}, {"p": "103-05", "v": 2560}, {"p": "103-06", "v": 2560}, {"p": "103-07", "v": 2560}, {"p": "103-08", "v": 2560}, {"p": "103-09", "v": 2536}, {"p": "103-10", "v": 2512}, {"p": "103-11", "v": 2512}, {"p": "103-12", "v": 2512}, {"p": "104-01", "v": 2512}, {"p": "104-02", "v": 2512}, {"p": "104-03", "v": 2512}, {"p": "104-04", "v": 2507}, {"p": "104-05", "v": 2492}, {"p": "104-06", "v": 2492}, {"p": "104-07", "v": 2492}, {"p": "104-08", "v": 2492}, {"p": "104-09", "v": 2484}, {"p": "104-10", "v": 2482}, {"p": "104-11", "v": 2482}, {"p": "104-12", "v": 2482}, {"p": "105-01", "v": 2482}, {"p": "105-02", "v": 2482}, {"p": "105-03", "v": 2482}, {"p": "105-04", "v": 2482}, {"p": "105-05", "v": 2482}, {"p": "105-06", "v": 2482}, {"p": "105-07", "v": 2482}, {"p": "105-08", "v": 2482}, {"p": "105-09", "v": 2482}, {"p": "105-10", "v": 2482}, {"p": "105-11", "v": 2482}, {"p": "105-12", "v": 2482}, {"p": "106-04", "v": 2482}, {"p": "106-05", "v": 2482}, {"p": "106-06", "v": 2482}, {"p": "106-07", "v": 2544}, {"p": "106-08", "v": 2482}, {"p": "106-09", "v": 2482}, {"p": "106-10", "v": 2482}, {"p": "106-11", "v": 2482}, {"p": "106-12", "v": 2482}, {"p": "107-01", "v": 2482}, {"p": "107-06", "v": 2482}, {"p": "107-07", "v": 2482}, {"p": "107-08", "v": 2482}, {"p": "107-09", "v": 2482}, {"p": "107-10", "v": 2516}, {"p": "107-11", "v": 2516}, {"p": "107-12", "v": 2516}, {"p": "108-01", "v": 2528}, {"p": "108-02", "v": 2528}, {"p": "108-03", "v": 2528}, {"p": "108-04", "v": 2528}, {"p": "108-05", "v": 2528}, {"p": "108-06", "v": 2528}, {"p": "108-07", "v": 2528}, {"p": "108-08", "v": 2528}, {"p": "108-09", "v": 2528}, {"p": "108-10", "v": 2528}, {"p": "108-11", "v": 2528}, {"p": "108-12", "v": 2528}, {"p": "109-01", "v": 2528}, {"p": "109-02", "v": 2528}, {"p": "109-03", "v": 2528}, {"p": "109-04", "v": 2314}, {"p": "109-05", "v": 2352}, {"p": "109-06", "v": 2338}, {"p": "109-07", "v": 2344}, {"p": "109-08", "v": 2444}, {"p": "109-09", "v": 2443}, {"p": "109-10", "v": 2425}, {"p": "109-11", "v": 2454}, {"p": "109-12", "v": 2414}, {"p": "110-01", "v": 2495}, {"p": "110-02", "v": 2502}, {"p": "110-03", "v": 2527}, {"p": "110-04", "v": 2542}, {"p": "110-05", "v": 2587}, {"p": "110-06", "v": 2465}, {"p": "110-07", "v": 2570}, {"p": "110-08", "v": 2595}, {"p": "110-09", "v": 2581}, {"p": "110-10", "v": 2610}, {"p": "110-11", "v": 2621}, {"p": "110-12", "v": 2639}, {"p": "111-01", "v": 2659}, {"p": "111-02", "v": 2702}, {"p": "111-03", "v": 2750}, {"p": "111-04", "v": 2780}, {"p": "111-05", "v": 2811}, {"p": "111-06", "v": 2841}, {"p": "111-07", "v": 2971}, {"p": "111-08", "v": 2990}, {"p": "111-09", "v": 3010}, {"p": "111-10", "v": 2994}, {"p": "111-11", "v": 2995}, {"p": "111-12", "v": 2991}, {"p": "112-01", "v": 3003}, {"p": "112-02", "v": 3023}, {"p": "112-03", "v": 2999}, {"p": "112-04", "v": 3018}, {"p": "112-05", "v": 3016}, {"p": "112-06", "v": 2998}, {"p": "112-07", "v": 3018}, {"p": "112-08", "v": 3016}, {"p": "112-09", "v": 3027}, {"p": "112-10", "v": 3018}, {"p": "112-11", "v": 3039}, {"p": "112-12", "v": 3026}, {"p": "113-01", "v": 3035}, {"p": "113-02", "v": 3029}, {"p": "113-03", "v": 3018}, {"p": "113-04", "v": 3024}, {"p": "113-05", "v": 3022}, {"p": "113-06", "v": 3028}, {"p": "113-07", "v": 3028}, {"p": "113-08", "v": 3029}, {"p": "113-09", "v": 3031}, {"p": "113-10", "v": 3035}, {"p": "113-11", "v": 3107}, {"p": "113-12", "v": 3121}, {"p": "114-01", "v": 3130}, {"p": "114-02", "v": 3121}, {"p": "114-03", "v": 3122}, {"p": "114-04", "v": 3138}, {"p": "114-05", "v": 3142}, {"p": "114-06", "v": 3244}, {"p": "114-07", "v": 3203}, {"p": "114-08", "v": 3208}, {"p": "114-09", "v": 3178}, {"p": "114-10", "v": 3178}, {"p": "114-11", "v": 3177}, {"p": "114-12", "v": 3175}, {"p": "115-01", "v": 3202}, {"p": "115-02", "v": 3203}, {"p": "115-03", "v": 3556}, {"p": "115-04", "v": 3991}, {"p": "115-05", "v": 3932}], "鋼板": [{"p": "103-01", "v": 20300}, {"p": "103-02", "v": 20300}, {"p": "103-03", "v": 20300}, {"p": "103-04", "v": 20300}, {"p": "103-05", "v": 20300}, {"p": "103-06", "v": 20300}, {"p": "103-07", "v": 20300}, {"p": "103-08", "v": 20300}, {"p": "103-09", "v": 20300}, {"p": "103-10", "v": 20300}, {"p": "103-11", "v": 20000}, {"p": "103-12", "v": 19700}, {"p": "104-01", "v": 19700}, {"p": "104-02", "v": 19700}, {"p": "104-03", "v": 19025}, {"p": "104-04", "v": 18800}, {"p": "104-05", "v": 18800}, {"p": "104-06", "v": 18800}, {"p": "104-07", "v": 18800}, {"p": "104-08", "v": 18000}, {"p": "104-09", "v": 18000}, {"p": "104-10", "v": 18000}, {"p": "104-11", "v": 18000}, {"p": "104-12", "v": 17000}, {"p": "105-01", "v": 17000}, {"p": "105-02", "v": 17100}, {"p": "105-03", "v": 17300}, {"p": "105-04", "v": 17725}, {"p": "105-05", "v": 17900}, {"p": "105-06", "v": 18200}, {"p": "105-07", "v": 18500}, {"p": "105-08", "v": 19100}, {"p": "105-09", "v": 19100}, {"p": "105-10", "v": 17800}, {"p": "105-11", "v": 18600}, {"p": "105-12", "v": 19620}, {"p": "106-04", "v": 20800}, {"p": "106-05", "v": 20650}, {"p": "106-06", "v": 20575}, {"p": "106-07", "v": 20050}, {"p": "106-08", "v": 20350}, {"p": "106-09", "v": 20500}, {"p": "106-10", "v": 20875}, {"p": "106-11", "v": 21000}, {"p": "106-12", "v": 20925}, {"p": "107-01", "v": 20900}, {"p": "107-06", "v": 22375}, {"p": "107-07", "v": 22500}, {"p": "107-08", "v": 23250}, {"p": "107-09", "v": 23500}, {"p": "107-10", "v": 23275}, {"p": "107-11", "v": 23200}, {"p": "107-12", "v": 23200}, {"p": "108-01", "v": 22825}, {"p": "108-02", "v": 22700}, {"p": "108-03", "v": 22700}, {"p": "108-04", "v": 22775}, {"p": "108-05", "v": 22800}, {"p": "108-06", "v": 22275}, {"p": "108-07", "v": 22100}, {"p": "108-08", "v": 22138}, {"p": "108-09", "v": 22150}, {"p": "108-10", "v": 22150}, {"p": "108-11", "v": 22000}, {"p": "108-12", "v": 20725}, {"p": "109-01", "v": 20300}, {"p": "109-02", "v": 20900}, {"p": "109-03", "v": 20900}, {"p": "109-04", "v": 20333}, {"p": "109-05", "v": 20333}, {"p": "109-06", "v": 20333}, {"p": "109-07", "v": 19833}, {"p": "109-08", "v": 19833}, {"p": "109-09", "v": 19833}, {"p": "109-10", "v": 20633}, {"p": "109-11", "v": 20633}, {"p": "109-12", "v": 20633}, {"p": "110-01", "v": 22133}, {"p": "110-02", "v": 22133}, {"p": "110-03", "v": 22133}, {"p": "110-04", "v": 24633}, {"p": "110-05", "v": 24633}, {"p": "110-06", "v": 24633}, {"p": "110-07", "v": 27133}, {"p": "110-08", "v": 27133}, {"p": "110-09", "v": 27133}, {"p": "110-10", "v": 28633}, {"p": "110-11", "v": 28633}, {"p": "110-12", "v": 28633}, {"p": "111-01", "v": 27833}, {"p": "111-02", "v": 27833}, {"p": "111-03", "v": 27833}, {"p": "111-04", "v": 30033}, {"p": "111-05", "v": 30033}, {"p": "111-06", "v": 30033}, {"p": "111-07", "v": 30033}, {"p": "111-08", "v": 30033}, {"p": "111-09", "v": 30033}, {"p": "111-10", "v": 27233}, {"p": "111-11", "v": 27233}, {"p": "111-12", "v": 27233}, {"p": "112-01", "v": 26233}, {"p": "112-02", "v": 26233}, {"p": "112-03", "v": 26233}, {"p": "112-04", "v": 28233}, {"p": "112-05", "v": 28233}, {"p": "112-07", "v": 26233}, {"p": "112-08", "v": 26233}, {"p": "112-09", "v": 26233}, {"p": "112-10", "v": 27433}, {"p": "112-11", "v": 27433}, {"p": "112-12", "v": 27433}, {"p": "113-01", "v": 28233}, {"p": "113-02", "v": 28233}, {"p": "113-03", "v": 28233}, {"p": "113-04", "v": 28533}, {"p": "113-05", "v": 28533}, {"p": "113-06", "v": 28533}, {"p": "113-07", "v": 28533}, {"p": "113-08", "v": 28533}, {"p": "113-09", "v": 28533}, {"p": "113-10", "v": 27533}, {"p": "113-11", "v": 27533}, {"p": "113-12", "v": 27533}, {"p": "114-01", "v": 27533}, {"p": "114-02", "v": 27533}, {"p": "114-03", "v": 27533}, {"p": "114-04", "v": 27533}, {"p": "114-05", "v": 27533}, {"p": "114-06", "v": 27533}, {"p": "114-07", "v": 26533}, {"p": "114-08", "v": 26533}, {"p": "114-09", "v": 26533}, {"p": "114-10", "v": 26533}, {"p": "114-11", "v": 26533}, {"p": "114-12", "v": 26533}, {"p": "115-01", "v": 26033}, {"p": "115-02", "v": 26033}, {"p": "115-03", "v": 26033}, {"p": "115-04", "v": 27033}, {"p": "115-05", "v": 27033}], "鋼筋": [{"p": "103-01", "v": 19600}, {"p": "103-02", "v": 19212}, {"p": "103-03", "v": 18962}, {"p": "103-04", "v": 19225}, {"p": "103-05", "v": 19300}, {"p": "103-06", "v": 19275}, {"p": "103-07", "v": 19500}, {"p": "103-08", "v": 19500}, {"p": "103-09", "v": 19500}, {"p": "103-10", "v": 18575}, {"p": "103-11", "v": 18350}, {"p": "103-12", "v": 17900}, {"p": "104-01", "v": 17525}, {"p": "104-02", "v": 17075}, {"p": "104-03", "v": 16200}, {"p": "104-04", "v": 16150}, {"p": "104-05", "v": 15350}, {"p": "104-06", "v": 15125}, {"p": "104-07", "v": 14225}, {"p": "104-08", "v": 13550}, {"p": "104-09", "v": 13600}, {"p": "104-10", "v": 12650}, {"p": "104-11", "v": 12650}, {"p": "104-12", "v": 12725}, {"p": "105-01", "v": 13000}, {"p": "105-02", "v": 13021}, {"p": "105-03", "v": 13246}, {"p": "105-04", "v": 14525}, {"p": "105-05", "v": 15925}, {"p": "105-06", "v": 14675}, {"p": "105-07", "v": 14475}, {"p": "105-08", "v": 14550}, {"p": "105-09", "v": 14550}, {"p": "105-10", "v": 14075}, {"p": "105-11", "v": 15300}, {"p": "105-12", "v": 15825}, {"p": "106-04", "v": 16300}, {"p": "106-05", "v": 15550}, {"p": "106-06", "v": 16050}, {"p": "106-07", "v": 16475}, {"p": "106-08", "v": 17775}, {"p": "106-09", "v": 18550}, {"p": "106-10", "v": 18125}, {"p": "106-11", "v": 18500}, {"p": "106-12", "v": 18725}, {"p": "107-01", "v": 19350}, {"p": "107-06", "v": 19500}, {"p": "107-07", "v": 20050}, {"p": "107-08", "v": 20150}, {"p": "107-09", "v": 20150}, {"p": "107-10", "v": 20375}, {"p": "107-11", "v": 19750}, {"p": "107-12", "v": 19000}, {"p": "108-01", "v": 18375}, {"p": "108-02", "v": 18675}, {"p": "108-03", "v": 19550}, {"p": "108-04", "v": 19075}, {"p": "108-05", "v": 18500}, {"p": "108-06", "v": 18700}, {"p": "108-07", "v": 18425}, {"p": "108-08", "v": 18450}, {"p": "108-09", "v": 17850}, {"p": "108-10", "v": 17200}, {"p": "108-11", "v": 17400}, {"p": "108-12", "v": 17650}, {"p": "109-01", "v": 17300}, {"p": "109-02", "v": 16800}, {"p": "109-03", "v": 16500}, {"p": "109-04", "v": 14917}, {"p": "109-05", "v": 15133}, {"p": "109-06", "v": 15665}, {"p": "109-07", "v": 15321}, {"p": "109-08", "v": 15624}, {"p": "109-09", "v": 16200}, {"p": "109-10", "v": 15833}, {"p": "109-11", "v": 16521}, {"p": "109-12", "v": 19071}, {"p": "110-01", "v": 20396}, {"p": "110-02", "v": 19586}, {"p": "110-03", "v": 19442}, {"p": "110-04", "v": 20764}, {"p": "110-05", "v": 23717}, {"p": "110-06", "v": 23850}, {"p": "110-07", "v": 23611}, {"p": "110-08", "v": 23000}, {"p": "110-09", "v": 23472}, {"p": "110-10", "v": 23800}, {"p": "110-11", "v": 22733}, {"p": "110-12", "v": 21900}, {"p": "111-01", "v": 21683}, {"p": "111-02", "v": 22894}, {"p": "111-03", "v": 25798}, {"p": "111-04", "v": 25283}, {"p": "111-05", "v": 23800}, {"p": "111-06", "v": 22302}, {"p": "111-07", "v": 20411}, {"p": "111-08", "v": 20967}, {"p": "111-09", "v": 20522}, {"p": "111-10", "v": 20544}, {"p": "111-11", "v": 19711}, {"p": "111-12", "v": 20815}, {"p": "112-01", "v": 21583}, {"p": "112-02", "v": 21256}, {"p": "112-03", "v": 21506}, {"p": "112-04", "v": 21078}, {"p": "112-05", "v": 19911}, {"p": "112-06", "v": 19778}, {"p": "112-07", "v": 19800}, {"p": "112-08", "v": 20067}, {"p": "112-09", "v": 20178}, {"p": "112-10", "v": 20037}, {"p": "112-11", "v": 19967}, {"p": "112-12", "v": 20341}, {"p": "113-01", "v": 20535}, {"p": "113-02", "v": 20241}, {"p": "113-03", "v": 19652}, {"p": "113-04", "v": 20246}, {"p": "113-05", "v": 19963}, {"p": "113-06", "v": 19637}, {"p": "113-07", "v": 19807}, {"p": "113-08", "v": 19052}, {"p": "113-09", "v": 18700}, {"p": "113-10", "v": 19185}, {"p": "113-11", "v": 18952}, {"p": "113-12", "v": 18541}, {"p": "114-01", "v": 18230}, {"p": "114-02", "v": 18746}, {"p": "114-03", "v": 18763}, {"p": "114-04", "v": 18396}, {"p": "114-05", "v": 17885}, {"p": "114-06", "v": 17280}, {"p": "114-07", "v": 16763}, {"p": "114-08", "v": 17752}, {"p": "114-09", "v": 17263}, {"p": "114-10", "v": 16946}, {"p": "114-11", "v": 16974}, {"p": "114-12", "v": 17039}, {"p": "115-01", "v": 17328}, {"p": "115-02", "v": 17528}, {"p": "115-03", "v": 19159}, {"p": "115-04", "v": 19533}, {"p": "115-05", "v": 19722}], "預拌混凝土": [{"p": "103-01", "v": 2100}, {"p": "103-02", "v": 2100}, {"p": "103-03", "v": 2100}, {"p": "103-04", "v": 2152}, {"p": "103-05", "v": 2205}, {"p": "103-06", "v": 2205}, {"p": "103-07", "v": 2205}, {"p": "103-08", "v": 2205}, {"p": "103-09", "v": 2182}, {"p": "103-10", "v": 2160}, {"p": "103-11", "v": 2160}, {"p": "103-12", "v": 2160}, {"p": "104-01", "v": 2160}, {"p": "104-02", "v": 2160}, {"p": "104-03", "v": 2160}, {"p": "104-04", "v": 2160}, {"p": "104-05", "v": 2160}, {"p": "104-06", "v": 2160}, {"p": "104-07", "v": 2160}, {"p": "104-08", "v": 2160}, {"p": "104-09", "v": 2160}, {"p": "104-10", "v": 2160}, {"p": "104-11", "v": 2160}, {"p": "104-12", "v": 2160}, {"p": "105-01", "v": 2160}, {"p": "105-02", "v": 2075}, {"p": "105-03", "v": 2075}, {"p": "105-04", "v": 2075}, {"p": "105-05", "v": 2160}, {"p": "105-06", "v": 2160}, {"p": "105-07", "v": 2160}, {"p": "105-08", "v": 2160}, {"p": "105-09", "v": 2160}, {"p": "105-10", "v": 2160}, {"p": "105-11", "v": 2160}, {"p": "105-12", "v": 2058}, {"p": "106-04", "v": 2058}, {"p": "106-05", "v": 2058}, {"p": "106-06", "v": 2075}, {"p": "106-07", "v": 2075}, {"p": "106-08", "v": 2058}, {"p": "106-09", "v": 2058}, {"p": "106-10", "v": 2160}, {"p": "106-11", "v": 2075}, {"p": "106-12", "v": 2075}, {"p": "107-01", "v": 2160}, {"p": "107-06", "v": 2075}, {"p": "107-07", "v": 2075}, {"p": "107-08", "v": 2075}, {"p": "107-09", "v": 2160}, {"p": "107-10", "v": 2075}, {"p": "107-11", "v": 2075}, {"p": "107-12", "v": 2075}, {"p": "108-01", "v": 2130}, {"p": "108-02", "v": 2130}, {"p": "108-03", "v": 2100}, {"p": "108-04", "v": 2100}, {"p": "108-05", "v": 2250}, {"p": "108-06", "v": 2100}, {"p": "108-07", "v": 2100}, {"p": "108-08", "v": 2100}, {"p": "108-09", "v": 2100}, {"p": "108-10", "v": 2100}, {"p": "108-11", "v": 2250}, {"p": "108-12", "v": 2115}, {"p": "109-01", "v": 2115}, {"p": "109-02", "v": 2255}, {"p": "109-03", "v": 2255}, {"p": "109-04", "v": 2125}, {"p": "109-05", "v": 2124}, {"p": "109-06", "v": 2122}, {"p": "109-07", "v": 2119}, {"p": "109-08", "v": 2120}, {"p": "109-09", "v": 2137}, {"p": "109-10", "v": 2149}, {"p": "109-11", "v": 2144}, {"p": "109-12", "v": 2151}, {"p": "110-01", "v": 2160}, {"p": "110-02", "v": 2166}, {"p": "110-03", "v": 2169}, {"p": "110-04", "v": 2157}, {"p": "110-05", "v": 2169}, {"p": "110-06", "v": 2166}, {"p": "110-07", "v": 2176}, {"p": "110-08", "v": 2192}, {"p": "110-09", "v": 2201}, {"p": "110-10", "v": 2228}, {"p": "110-11", "v": 2252}, {"p": "110-12", "v": 2269}, {"p": "111-01", "v": 2285}, {"p": "111-02", "v": 2293}, {"p": "111-03", "v": 2310}, {"p": "111-04", "v": 2356}, {"p": "111-05", "v": 2374}, {"p": "111-06", "v": 2424}, {"p": "111-07", "v": 2412}, {"p": "111-08", "v": 2439}, {"p": "111-09", "v": 2451}, {"p": "111-10", "v": 2470}, {"p": "111-11", "v": 2477}, {"p": "111-12", "v": 2492}, {"p": "112-01", "v": 2514}, {"p": "112-02", "v": 2524}, {"p": "112-03", "v": 2528}, {"p": "112-04", "v": 2529}, {"p": "112-05", "v": 2543}, {"p": "112-06", "v": 2545}, {"p": "112-07", "v": 2551}, {"p": "112-08", "v": 2555}, {"p": "112-09", "v": 2559}, {"p": "112-10", "v": 2562}, {"p": "112-11", "v": 2570}, {"p": "112-12", "v": 2578}, {"p": "113-01", "v": 2596}, {"p": "113-02", "v": 2598}, {"p": "113-03", "v": 2603}, {"p": "113-04", "v": 2618}, {"p": "113-05", "v": 2615}, {"p": "113-06", "v": 2629}, {"p": "113-07", "v": 2636}, {"p": "113-08", "v": 2646}, {"p": "113-09", "v": 2648}, {"p": "113-10", "v": 2650}, {"p": "113-11", "v": 2663}, {"p": "113-12", "v": 2662}, {"p": "114-01", "v": 2677}, {"p": "114-02", "v": 2685}, {"p": "114-03", "v": 2691}, {"p": "114-04", "v": 2692}, {"p": "114-05", "v": 2695}, {"p": "114-06", "v": 2709}, {"p": "114-07", "v": 2718}, {"p": "114-08", "v": 2716}, {"p": "114-09", "v": 2703}, {"p": "114-10", "v": 2701}, {"p": "114-11", "v": 2701}, {"p": "114-12", "v": 2708}, {"p": "115-01", "v": 2704}, {"p": "115-02", "v": 2708}, {"p": "115-03", "v": 2762}, {"p": "115-04", "v": 2751}, {"p": "115-05", "v": 2779}], "砂石": [{"p": "103-01", "v": 494}, {"p": "103-02", "v": 494}, {"p": "103-03", "v": 494}, {"p": "103-04", "v": 529}, {"p": "103-05", "v": 529}, {"p": "103-06", "v": 529}, {"p": "103-07", "v": 529}, {"p": "103-08", "v": 529}, {"p": "103-09", "v": 521}, {"p": "103-10", "v": 521}, {"p": "103-11", "v": 521}, {"p": "103-12", "v": 521}, {"p": "104-01", "v": 521}, {"p": "104-02", "v": 521}, {"p": "104-03", "v": 521}, {"p": "104-04", "v": 521}, {"p": "104-05", "v": 521}, {"p": "104-06", "v": 521}, {"p": "104-07", "v": 521}, {"p": "104-08", "v": 521}, {"p": "104-09", "v": 521}, {"p": "104-10", "v": 519}, {"p": "104-11", "v": 519}, {"p": "104-12", "v": 519}, {"p": "105-01", "v": 519}, {"p": "105-02", "v": 519}, {"p": "105-03", "v": 519}, {"p": "105-04", "v": 519}, {"p": "105-05", "v": 519}, {"p": "105-06", "v": 519}, {"p": "105-07", "v": 519}, {"p": "105-08", "v": 519}, {"p": "105-09", "v": 519}, {"p": "105-10", "v": 519}, {"p": "105-11", "v": 519}, {"p": "105-12", "v": 519}, {"p": "106-04", "v": 519}, {"p": "106-05", "v": 519}, {"p": "106-06", "v": 519}, {"p": "106-07", "v": 519}, {"p": "106-08", "v": 519}, {"p": "106-09", "v": 519}, {"p": "106-10", "v": 519}, {"p": "106-11", "v": 519}, {"p": "106-12", "v": 519}, {"p": "107-01", "v": 519}, {"p": "107-06", "v": 519}, {"p": "107-07", "v": 519}, {"p": "107-08", "v": 519}, {"p": "107-09", "v": 519}, {"p": "107-10", "v": 519}, {"p": "107-11", "v": 519}, {"p": "107-12", "v": 519}, {"p": "108-01", "v": 568}, {"p": "108-02", "v": 568}, {"p": "108-03", "v": 535}, {"p": "108-04", "v": 529}, {"p": "108-05", "v": 529}, {"p": "108-06", "v": 529}, {"p": "108-07", "v": 529}, {"p": "108-08", "v": 529}, {"p": "108-09", "v": 529}, {"p": "108-10", "v": 529}, {"p": "108-11", "v": 529}, {"p": "108-12", "v": 535}, {"p": "109-01", "v": 535}, {"p": "109-02", "v": 539}, {"p": "109-03", "v": 539}, {"p": "109-05", "v": 354}, {"p": "109-09", "v": 354}, {"p": "109-10", "v": 354}, {"p": "109-11", "v": 354}, {"p": "109-12", "v": 354}, {"p": "110-01", "v": 354}, {"p": "110-02", "v": 354}, {"p": "110-03", "v": 354}, {"p": "110-04", "v": 354}, {"p": "110-05", "v": 354}, {"p": "110-06", "v": 354}, {"p": "110-07", "v": 354}, {"p": "110-08", "v": 354}, {"p": "110-09", "v": 354}, {"p": "110-10", "v": 354}, {"p": "110-11", "v": 354}, {"p": "110-12", "v": 355}, {"p": "111-01", "v": 356}, {"p": "111-02", "v": 356}, {"p": "111-03", "v": 356}, {"p": "111-04", "v": 356}, {"p": "111-05", "v": 356}, {"p": "111-06", "v": 357}, {"p": "111-07", "v": 357}, {"p": "111-08", "v": 357}, {"p": "111-09", "v": 357}, {"p": "111-10", "v": 357}, {"p": "111-11", "v": 357}, {"p": "111-12", "v": 357}, {"p": "112-02", "v": 357}, {"p": "112-04", "v": 357}, {"p": "112-05", "v": 357}, {"p": "112-06", "v": 360}, {"p": "112-07", "v": 360}, {"p": "112-09", "v": 360}, {"p": "112-10", "v": 360}, {"p": "112-11", "v": 360}, {"p": "112-12", "v": 362}, {"p": "113-01", "v": 363}, {"p": "113-03", "v": 364}, {"p": "113-04", "v": 364}, {"p": "113-05", "v": 364}, {"p": "113-06", "v": 364}, {"p": "113-07", "v": 364}, {"p": "113-09", "v": 364}, {"p": "113-10", "v": 364}, {"p": "113-11", "v": 364}, {"p": "113-12", "v": 364}, {"p": "114-02", "v": 364}, {"p": "114-03", "v": 366}, {"p": "114-05", "v": 367}, {"p": "114-06", "v": 367}, {"p": "114-07", "v": 367}, {"p": "114-09", "v": 367}, {"p": "114-11", "v": 367}, {"p": "114-12", "v": 367}, {"p": "115-01", "v": 368}, {"p": "115-02", "v": 369}, {"p": "115-03", "v": 369}, {"p": "115-05", "v": 369}, {"p": "115-06", "v": 370}]}, "snap": {"H型鋼": {"latest": 28972, "period": "115-05", "unit": "元/噸", "yoy": 7.5, "mom": 1.1, "y3": -5.7, "lo": 18350, "hi": 33838}, "瀝青混凝土": {"latest": 3932, "period": "115-05", "unit": "元/噸", "yoy": 25.1, "mom": -1.5, "y3": 30.4, "lo": 2314, "hi": 3991}, "鋼板": {"latest": 27033, "period": "115-05", "unit": "元/噸", "yoy": -1.8, "mom": 0.0, "y3": -4.3, "lo": 17000, "hi": 30033}, "鋼筋": {"latest": 19722, "period": "115-05", "unit": "元/噸", "yoy": 10.3, "mom": 1.0, "y3": -0.9, "lo": 12650, "hi": 25798}, "預拌混凝土": {"latest": 2779, "period": "115-05", "unit": "元/方", "yoy": 3.1, "mom": 1.0, "y3": 9.3, "lo": 2058, "hi": 2779}, "砂石": {"latest": 370, "period": "115-06", "unit": "元/方", "yoy": 0.8, "mom": 0.3, "y3": 2.8, "lo": 354, "hi": 568}}, "region": {"H型鋼": {"中": 29100, "北": 29417, "南": 28400}, "瀝青混凝土": {"中": 3814, "北": 3968, "南": 3538, "東": 4169}, "砂石": {"中": 396, "北": 418, "南": 286, "東": 280}, "鋼板": {"全國": 27033}, "鋼筋": {"中": 19833, "北": 19900, "南": 19433}, "預拌混凝土": {"中": 2782, "北": 3172, "南": 2717, "東": 2612}}};
+const MAT = {
+  "鋼筋":{key:"steel",unit:"元/噸"}, "H型鋼":{key:"hbeam",unit:"元/噸"}, "鋼板":{key:"plate",unit:"元/噸"},
+  "預拌混凝土":{key:"concrete",unit:"元/方"}, "瀝青混凝土":{key:"asphalt",unit:"元/噸"}, "砂石":{key:"sand",unit:"元/方"}
+};
+const ORDER=["鋼筋","H型鋼","鋼板","預拌混凝土","瀝青混凝土","砂石"];
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const colOf=m=>css("--m-"+MAT[m].key);
+const S=m=>DATA.series[m], SN=m=>DATA.snap[m];
+const rocLabel=p=>{const[y,mo]=p.split("-");return y+"/"+(+mo);};
+const fmt=n=>Math.round(n).toLocaleString("en-US");
+const fmtWan=n=>{const w=n/10000; return (w>=10000? (w/10000).toFixed(2)+" 億": Math.round(w).toLocaleString("en-US")+" 萬");};
+const priceAt=(m,p)=>{const a=S(m);let r=a[0].v;for(const x of a){if(x.p<=p)r=x.v;else break;}return r;};
+const LATEST=DATA.snap["鋼筋"].period;
+document.getElementById("asof").textContent="民國 "+rocLabel(LATEST);
+
+/* ---------- generic SVG line chart with crosshair ---------- */
+const tip=document.getElementById("tip");
+function lineChart(mount,{series,mode,yfmt,height=270,base=null}){
+  const W=760,H=height,PL=52,PR=18,PT=14,PB=26;
+  const n=series[0].pts.length;
+  let vals=[];series.forEach(s=>s.pts.forEach(p=>{if(p.y!=null)vals.push(p.y);}));
+  let mn=Math.min(...vals),mx=Math.max(...vals);
+  if(mode==="pct"){const a=Math.max(Math.abs(mn),Math.abs(mx));mn=-a;mx=a;}
+  const pad=(mx-mn)*0.08||1;mn-=pad;mx+=pad;
+  const X=i=>PL+(W-PL-PR)*(n<=1?0.5:i/(n-1));
+  const Y=v=>PT+(H-PT-PB)*(1-(v-mn)/(mx-mn));
+  const ns="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(ns,"svg");svg.setAttribute("class","chart");svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const mk=(t,a)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  // y grid
+  const ticks=5;for(let i=0;i<=ticks;i++){const v=mn+(mx-mn)*i/ticks;const y=Y(v);
+    svg.appendChild(mk("line",{x1:PL,y1:y,x2:W-PR,y2:y,class:(mode==="pct"&&Math.abs(v)<1e-6)?"zero":"gridln"}));
+    const t=mk("text",{x:PL-8,y:y+3,class:"axis","text-anchor":"end"});t.textContent=yfmt(v);svg.appendChild(t);}
+  // x labels (~6)
+  const xl=series[0].pts;const step=Math.max(1,Math.round(n/6));
+  for(let i=0;i<n;i+=step){const t=mk("text",{x:X(i),y:H-8,class:"axis","text-anchor":"middle"});t.textContent=rocLabel(xl[i].p);svg.appendChild(t);}
+  // lines
+  series.forEach(s=>{if(s.hidden)return;let d="";let started=false;
+    s.pts.forEach((p,i)=>{if(p.y==null)return;d+=(started?"L":"M")+X(i)+" "+Y(p.y);started=true;});
+    svg.appendChild(mk("path",{d,fill:"none",stroke:s.color,"stroke-width":2.2,"stroke-linejoin":"round","stroke-linecap":"round"}));
+  });
+  // end labels — de-collided so overlapping series stay readable
+  const ends=[];series.forEach(s=>{if(s.hidden)return;const last=s.pts[s.pts.length-1];if(last.y!=null)ends.push({label:s.label,color:s.color,y:Y(last.y)});});
+  ends.sort((a,b)=>a.y-b.y);const gap=13;
+  for(let i=1;i<ends.length;i++){if(ends[i].y-ends[i-1].y<gap)ends[i].y=ends[i-1].y+gap;}
+  const over=ends.length?ends[ends.length-1].y-(H-PB):0;  // 若最低標籤超出下界，整體上移補償
+  if(over>0)ends.forEach(e=>e.y-=over);
+  ends.forEach(e=>{const t=mk("text",{x:X(n-1)+6,y:e.y+3,class:"lbl",fill:e.color,"text-anchor":"start"});t.textContent=e.label;svg.appendChild(t);});
+  // crosshair overlay
+  const cl=mk("line",{x1:0,y1:PT,x2:0,y2:H-PB,stroke:"var(--baseline)","stroke-width":1,opacity:0});svg.appendChild(cl);
+  const dots=series.map(s=>{const c=mk("circle",{r:3.5,fill:"var(--surface)",stroke:s.color,"stroke-width":2,opacity:0});svg.appendChild(c);return c;});
+  const hit=mk("rect",{x:PL,y:PT,width:W-PL-PR,height:H-PT-PB,fill:"transparent"});svg.appendChild(hit);
+  function move(ev){const r=svg.getBoundingClientRect();const px=(ev.clientX-r.left)/r.width*W;
+    let i=Math.round((px-PL)/((W-PL-PR)/(n-1)));i=Math.max(0,Math.min(n-1,i));
+    cl.setAttribute("x1",X(i));cl.setAttribute("x2",X(i));cl.setAttribute("opacity",1);
+    let rows="";series.forEach((s,k)=>{const p=s.pts[i];if(s.hidden||p.y==null){dots[k].setAttribute("opacity",0);return;}
+      dots[k].setAttribute("cx",X(i));dots[k].setAttribute("cy",Y(p.y));dots[k].setAttribute("opacity",1);
+      rows+=`<div class="tr"><span class="k"><span class="sw" style="background:${s.color}"></span>${s.label}</span><span class="v">${s.vfmt(p.y)}</span></div>`;});
+    tip.innerHTML=`<div class="th">民國 ${rocLabel(series[0].pts[i].p)}</div>${rows}`;
+    tip.style.opacity=1;const tx=ev.clientX+14,ty=ev.clientY-10;
+    tip.style.left=Math.min(tx,window.innerWidth-tip.offsetWidth-12)+"px";tip.style.top=ty+"px";
+  }
+  hit.addEventListener("mousemove",move);
+  hit.addEventListener("mouseleave",()=>{tip.style.opacity=0;cl.setAttribute("opacity",0);dots.forEach(d=>d.setAttribute("opacity",0));});
+  mount.innerHTML="";mount.appendChild(svg);
+}
+
+function sparkline(mount,pts,color){
+  const W=180,H=38,ns="http://www.w3.org/2000/svg";const vs=pts.map(p=>p.v);
+  const mn=Math.min(...vs),mx=Math.max(...vs);const X=i=>(W)*(i/(pts.length-1));const Y=v=>4+(H-8)*(1-(v-mn)/((mx-mn)||1));
+  const mk=(t,a)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  const svg=document.createElementNS(ns,"svg");svg.setAttribute("class","spark");svg.setAttribute("viewBox",`0 0 ${W} ${H}`);svg.setAttribute("preserveAspectRatio","none");
+  let d="",a="";pts.forEach((p,i)=>{d+=(i?"L":"M")+X(i)+" "+Y(p.v);});a=d+`L${W} ${H}L0 ${H}Z`;
+  const gid="g"+Math.random().toString(36).slice(2,7);
+  const defs=mk("defs",{});const lg=mk("linearGradient",{id:gid,x1:0,y1:0,x2:0,y2:1});
+  lg.appendChild(mk("stop",{offset:0,"stop-color":color,"stop-opacity":.22}));lg.appendChild(mk("stop",{offset:1,"stop-color":color,"stop-opacity":0}));
+  defs.appendChild(lg);svg.appendChild(defs);
+  svg.appendChild(mk("path",{d:a,fill:`url(#${gid})`,stroke:"none"}));
+  svg.appendChild(mk("path",{d,fill:"none",stroke:color,"stroke-width":2,"stroke-linejoin":"round"}));
+  svg.appendChild(mk("circle",{cx:X(pts.length-1),cy:Y(vs[vs.length-1]),r:2.6,fill:color}));
+  mount.innerHTML="";mount.appendChild(svg);
+}
+
+const badge=(pct,long)=>{if(pct==null)return"";const up=pct>0.15,dn=pct<-0.15;
+  const cls=up?"up":dn?"dn":"fl";const ar=up?"▲":dn?"▼":"■";
+  return `<span class="badge ${cls}">${ar} ${pct>0?"+":""}${pct.toFixed(1)}%</span>`;};
+
+/* ---------- TAB1 ---------- */
+function renderWatch(){
+  // banner: top riser
+  const ranked=ORDER.map(m=>({m,yoy:SN(m).yoy})).sort((a,b)=>b.yoy-a.yoy);
+  const top=ranked[0];const risers=ranked.filter(r=>r.yoy>5).length;
+  document.getElementById("banner").innerHTML=`
+    <div class="banner">
+      <div class="dot">⚠</div>
+      <div><h2>${top.m} 領漲，近一年 +${top.yoy.toFixed(1)}%</h2>
+        <p>6 項大宗物料中有 <b>${risers}</b> 項近一年漲幅超過 5%。編列中或待發包工程若含此類材料，材料成本恐高於原估。</p></div>
+      <div class="big"><div class="n">+${top.yoy.toFixed(1)}%</div><div class="l">${top.m} · 近一年</div></div>
+    </div>`;
+  // cards
+  const pc=document.getElementById("pcards");pc.innerHTML="";
+  ORDER.forEach(m=>{const s=SN(m),c=colOf(m);const el=document.createElement("div");el.className="card pad mcard";
+    el.innerHTML=`<div class="top"><span class="swatch" style="background:${c}"></span><span class="name">${m}</span></div>
+      <div class="price num">${fmt(s.latest)}<span class="unit"> ${s.unit}</span></div>
+      <div style="margin-top:6px">${badge(s.yoy)} <span style="font-size:11px;color:var(--muted)">近一年</span></div>
+      <div class="spark" id="sp-${MAT[m].key}"></div>
+      <div class="foot"><span>月 ${s.mom>0?"+":""}${s.mom}%</span><span>3年 ${s.y3>0?"+":""}${s.y3}%</span></div>`;
+    pc.appendChild(el);sparkline(el.querySelector(".spark"),S(m).slice(-37),c);});
+  buildCompare();renderMovers();
+}
+let cmpRange=36, cmpHidden={};
+function buildCompare(){
+  const lg=document.getElementById("cmpLegend");lg.innerHTML="";
+  ORDER.forEach(m=>{const c=colOf(m);const s=document.createElement("span");s.className="lg"+(cmpHidden[m]?" off":"");
+    s.innerHTML=`<span class="swatch" style="background:${c}"></span>${m}`;
+    s.onclick=()=>{cmpHidden[m]=!cmpHidden[m];buildCompare();};lg.appendChild(s);});
+  const full=S("鋼筋").length;const win=cmpRange>=999?full:Math.min(full,cmpRange+1);
+  const series=ORDER.map(m=>{const arr=S(m);const seg=arr.slice(-win);const b=seg[0].v;
+    return {label:m,color:colOf(m),hidden:!!cmpHidden[m],vfmt:v=>(v>0?"+":"")+v.toFixed(1)+"%",
+      pts:seg.map(p=>({p:p.p,y:b?(p.v/b-1)*100:null}))};});
+  lineChart(document.getElementById("cmpChart"),{series,mode:"pct",yfmt:v=>(v>0?"+":"")+Math.round(v)+"%"});
+  const baseP=series[0].pts[0].p;document.getElementById("cmpSub").textContent=`相對 民國${rocLabel(baseP)} 的累積漲跌（%）— 不同單價品項可同軸比較`;
+  // table
+  const tb=document.getElementById("cmpTable");const seg0=S("鋼筋").slice(-win);
+  let h=`<div class="tablewrap"><table class="data"><thead><tr><th>民國</th>${ORDER.map(m=>`<th>${m}</th>`).join("")}</tr></thead><tbody>`;
+  const idxs=[0,Math.floor((seg0.length-1)/2),seg0.length-1];
+  idxs.forEach(i=>{h+=`<tr><td>${rocLabel(seg0[i].p)}</td>`+ORDER.map(m=>{const seg=S(m).slice(-win);const b=seg[0].v;const v=(seg[i].v/b-1)*100;return `<td>${v>0?"+":""}${v.toFixed(1)}%</td>`;}).join("")+`</tr>`;});
+  h+="</tbody></table></div>";tb.innerHTML=h;
+}
+/* generic vertical column chart — magnitude (from 0) or diverging (± around zero) */
+function columnChart(mount,{items,mode="magnitude",height=230,width=440}){
+  const W=width,H=height,PL=16,PR=16,PT=26,PB=48,ns="http://www.w3.org/2000/svg";
+  const vals=items.map(d=>d.value);
+  let mx,mn;
+  if(mode==="diverging"){const a=(Math.max(...vals.map(v=>Math.abs(v)))||1)*1.3;mx=a;mn=-a;}
+  else{mx=(Math.max(...vals)||1)*1.16;mn=0;}
+  const Y=v=>PT+(H-PT-PB)*(1-(v-mn)/(mx-mn));
+  const n=items.length,step=(W-PL-PR)/n,bw=Math.min(step*0.46,54);
+  const mk=(t,a,txt)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;};
+  const svg=document.createElementNS(ns,"svg");svg.setAttribute("class","chart");svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const zy=Y(0);
+  svg.appendChild(mk("line",{x1:PL,y1:zy,x2:W-PR,y2:zy,class:mode==="diverging"?"zero":"baseln"}));
+  items.forEach((d,i)=>{
+    const cx=PL+step*i+step/2,up=d.value>=0,y1=Y(d.value),top=Math.min(zy,y1),h=Math.max(Math.abs(y1-zy),2);
+    const r=mk("rect",{x:cx-bw/2,y:top,width:bw,height:h,rx:4,fill:d.barColor});
+    r.appendChild(mk("title",{},d.label+"："+d.vlabel));svg.appendChild(r);
+    svg.appendChild(mk("text",{x:cx,y:up?top-7:top+h+16,class:"lbl",fill:d.barColor,"text-anchor":"middle"},d.vlabel));
+    if(d.swatch)svg.appendChild(mk("rect",{x:cx-4.5,y:H-35,width:9,height:9,rx:2,fill:d.swatch}));
+    svg.appendChild(mk("text",{x:cx,y:H-16,class:"axis","text-anchor":"middle"},d.label));
+  });
+  mount.innerHTML="";mount.appendChild(svg);
+}
+function renderMovers(){
+  const items=ORDER.map(m=>{const y=SN(m).yoy;const up=y>0.05,dn=y<-0.05;
+    return {label:m,value:y,vlabel:(y>0?"+":"")+y.toFixed(1)+"%",
+      barColor:up?"var(--rise)":dn?"var(--fall)":"var(--muted)",swatch:colOf(m)};})
+    .sort((a,b)=>b.value-a.value);
+  columnChart(document.getElementById("movers"),{items,mode:"diverging",height:260,width:760});
+}
+
+/* ---------- TAB2 ---------- */
+const PROJECTS=[
+  {id:"viaduct",name:"鐵路高架化橋梁工程",type:"RC高架橋",date:"110-06",basket:{"鋼筋":2400,"預拌混凝土":18000,"H型鋼":320,"鋼板":180,"砂石":8500}},
+  {id:"steel",name:"跨溪鐵路鋼構橋梁新建工程",type:"鋼構橋",date:"111-09",basket:{"H型鋼":1850,"鋼板":1240,"鋼筋":680,"預拌混凝土":5200}},
+  {id:"retro",name:"鐵路橋梁耐震補強工程",type:"橋梁補強",date:"112-11",basket:{"鋼筋":520,"鋼板":310,"預拌混凝土":3400}},
+];
+let curProj=JSON.parse(JSON.stringify(PROJECTS[0])), origDate=PROJECTS[0].date;
+function renderProjList(){const el=document.getElementById("projList");el.innerHTML="";
+  PROJECTS.forEach(p=>{const b=document.createElement("button");b.className="projbtn";b.setAttribute("aria-pressed",p.id===curProj.id);
+    b.innerHTML=`<div class="pn">${p.name}</div><div class="pm"><span class="pill">${p.type}</span>編列 民國${rocLabel(p.date)}</div>`;
+    b.onclick=()=>{curProj=JSON.parse(JSON.stringify(p));origDate=p.date;renderRecost();};el.appendChild(b);});}
+function renderBasket(){
+  const items=Object.keys(curProj.basket);
+  let h=`<table><thead><tr><th>材料</th><th>用量</th><th>單位</th></tr></thead><tbody>`;
+  items.forEach(m=>{h+=`<tr><td><span class="mm"><span class="swatch" style="background:${colOf(m)}"></span>${m}</span></td>
+    <td class="r"><input type="number" min="0" value="${curProj.basket[m]}" data-m="${m}"></td>
+    <td class="r" style="color:var(--muted)">${MAT[m].unit.replace("元/","")}</td></tr>`;});
+  h+="</tbody></table>";document.getElementById("basket").innerHTML=h;
+  document.querySelectorAll("#basket input").forEach(inp=>inp.oninput=()=>{curProj.basket[inp.dataset.m]=+inp.value||0;computeRecost();});
+  // date options
+  const sel=document.getElementById("origDate");if(!sel.options.length){const ps=S("鋼筋").map(x=>x.p);
+    ps.filter((_,i)=>i%3===0).forEach(p=>{const o=document.createElement("option");o.value=p;o.textContent="民國 "+rocLabel(p);sel.appendChild(o);});}
+  sel.value=[...sel.options].some(o=>o.value===origDate)?origDate:sel.options[Math.floor(sel.options.length*0.6)].value;
+  origDate=sel.value;sel.onchange=()=>{origDate=sel.value;computeRecost();};
+}
+function costAt(basket,p){let t=0;for(const m in basket)t+=basket[m]*priceAt(m,p);return t;}
+function computeRecost(){
+  const b=curProj.basket;const orig=costAt(b,origDate),now=costAt(b,LATEST);const d=now-orig,pct=orig?d/orig*100:0;
+  const up=d>=0;
+  document.getElementById("stat3").innerHTML=`
+    <div class="st"><div class="l">原始編列材料成本</div><div class="v">${fmtWan(orig)}</div><div class="s">民國${rocLabel(origDate)} 物價</div></div>
+    <div class="st"><div class="l">以今日物價重估</div><div class="v">${fmtWan(now)}</div><div class="s">民國${rocLabel(LATEST)} 物價</div></div>
+    <div class="st ${up?'hl':'hlg'}"><div class="l">差額</div><div class="v">${up?"+":"−"}${fmtWan(Math.abs(d))}</div><div class="s">${up?"↑ 需追加 ":"↓ 可節省 "}${up?"+":""}${pct.toFixed(1)}%</div></div>`;
+  // waterfall
+  const parts=Object.keys(b).map(m=>({m,d:b[m]*(priceAt(m,LATEST)-priceAt(m,origDate))})).sort((a,z)=>Math.abs(z.d)-Math.abs(a.d));
+  waterfall(document.getElementById("waterfall"),parts,d);
+  // basket over time
+  const arr=S("鋼筋");const seg=arr.slice(-Math.min(arr.length, (999)));
+  const series=[{label:"材料總成本",color:css("--accent"),vfmt:v=>fmtWan(v)+"元",
+    pts:S("鋼筋").map(x=>({p:x.p,y:costAt(b,x.p)}))}];
+  lineChart(document.getElementById("basketChart"),{series,mode:"abs",height:230,yfmt:v=>fmtWan(v)});
+  // reco
+  const buf=8;const rec=now*(1+buf/100);
+  document.getElementById("reco").innerHTML=`<div class="ic">✎</div>
+    <div><h4>規劃中類似工程 · 建議材料預算</h4>
+      <p>以今日物價重估 ${fmtWan(now)}元，加計完工前物價緩衝 ${buf}%（過去一年多數材料仍在漲）。實際編列請再依工程規模與工期調整。</p></div>
+    <div class="rv"><div class="n">${fmtWan(rec)}</div><div class="l">建議編列（含緩衝）</div></div>`;
+}
+function waterfall(mount,parts,total){
+  const W=760,H=210,PL=52,PR=18,PT=10,PB=40,ns="http://www.w3.org/2000/svg";
+  const vals=parts.map(p=>p.d);const mx=Math.max(0,...vals),mn=Math.min(0,...vals);const pad=(mx-mn)*0.12||1;
+  const hi=mx+pad,lo=mn-pad;const Y=v=>PT+(H-PT-PB)*(1-(v-lo)/(hi-lo));
+  const bw=(W-PL-PR)/parts.length*0.56;const step=(W-PL-PR)/parts.length;
+  const mk=(t,a,txt)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;};
+  const svg=document.createElementNS(ns,"svg");svg.setAttribute("class","chart");svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  svg.appendChild(mk("line",{x1:PL,y1:Y(0),x2:W-PR,y2:Y(0),class:"baseln"}));
+  const t0=mk("text",{x:PL-8,y:Y(0)+3,class:"axis","text-anchor":"end"},"0");svg.appendChild(t0);
+  parts.forEach((p,i)=>{const cx=PL+step*i+step/2;const up=p.d>=0;const c=up?"var(--rise)":"var(--fall)";
+    const y0=Y(0),y1=Y(p.d);const top=Math.min(y0,y1),h=Math.abs(y1-y0);
+    svg.appendChild(mk("rect",{x:cx-bw/2,y:top,width:bw,height:Math.max(h,1),rx:4,fill:c,opacity:.92}));
+    svg.appendChild(mk("text",{x:cx,y:up?top-6:top+h+15,class:"lbl",fill:c,"text-anchor":"middle"},(up?"+":"−")+fmtWan(Math.abs(p.d))));
+    svg.appendChild(mk("text",{x:cx,y:H-22,class:"axis","text-anchor":"middle"},p.m));
+    svg.appendChild(mk("circle",{cx:cx-bw/2-11,cy:H-25.5,r:4,fill:colOf(p.m)}));
+  });
+  mount.innerHTML="";mount.appendChild(svg);
+}
+function renderRecost(){renderProjList();renderBasket();computeRecost();}
+
+/* ---------- TAB3 ---------- */
+let curMat="瀝青混凝土", dRange=999;
+function renderDetail(){
+  const mc=document.getElementById("matChips");mc.innerHTML="";
+  ORDER.forEach(m=>{const b=document.createElement("button");b.className="chip";b.setAttribute("aria-pressed",m===curMat);
+    b.innerHTML=`<span class="swatch" style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${colOf(m)};margin-right:5px;vertical-align:-1px"></span>${m}`;
+    b.onclick=()=>{curMat=m;renderDetail();};mc.appendChild(b);});
+  const s=SN(curMat),c=colOf(curMat);
+  document.getElementById("dTitle").textContent=curMat+" 單價走勢";
+  document.getElementById("dSub").textContent="實際成交單價（"+s.unit+"）";
+  const full=S(curMat).length;const win=dRange>=999?full:Math.min(full,dRange+1);
+  const seg=S(curMat).slice(-win);
+  lineChart(document.getElementById("dChart"),{series:[{label:curMat,color:c,vfmt:v=>fmt(v)+" "+s.unit,pts:seg.map(p=>({p:p.p,y:p.v}))}],mode:"abs",height:250,yfmt:v=>fmt(v)});
+  document.getElementById("dStats").innerHTML=`
+    <div class="m"><div class="l">最新單價</div><div class="v">${fmt(s.latest)}</div></div>
+    <div class="m"><div class="l">近一年</div><div class="v" style="color:${s.yoy>0?'var(--rise)':'var(--fall)'}">${s.yoy>0?"+":""}${s.yoy}%</div></div>
+    <div class="m"><div class="l">近三年</div><div class="v" style="color:${s.y3>0?'var(--rise)':'var(--fall)'}">${s.y3>0?"+":""}${s.y3}%</div></div>
+    <div class="m"><div class="l">12年區間</div><div class="v" style="font-size:13px">${fmt(s.lo)}–${fmt(s.hi)}</div></div>`;
+  // region bars
+  const reg=DATA.region[curMat]||{};const order=["北","中","南","東","全國"];const ks=order.filter(k=>reg[k]!=null);
+  const items=ks.map(k=>({label:(k==="全國"?"全國":k+"區"),value:reg[k],vlabel:fmt(reg[k]),barColor:c}));
+  columnChart(document.getElementById("dReg"),{items,mode:"magnitude",height:230,width:Math.max(300,ks.length*92)});
+  document.getElementById("dRegNote").textContent=ks.length<=1?"此品項為全國單一報價，無分區。":"單位："+s.unit+"。東區部分品項參考北／南區報價。";
+}
+
+/* ---------- tabs & theme ---------- */
+document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===b.dataset.tab));
+});
+document.getElementById("rangeChips").addEventListener("click",e=>{const b=e.target.closest("[data-r]");if(!b)return;
+  cmpRange=+b.dataset.r;document.querySelectorAll("#rangeChips .chip").forEach(x=>x.setAttribute("aria-pressed",x===b));buildCompare();});
+document.getElementById("tblTog").onclick=()=>{const t=document.getElementById("cmpTable");const c=document.getElementById("cmpChart");
+  const show=t.style.display==="none";t.style.display=show?"block":"none";c.style.display=show?"none":"block";document.getElementById("tblTog").textContent=show?"圖表":"資料表";};
+document.getElementById("dRange").addEventListener("click",e=>{const b=e.target.closest("[data-r]");if(!b)return;
+  dRange=+b.dataset.r;document.querySelectorAll("#dRange .chip").forEach(x=>x.setAttribute("aria-pressed",x===b));renderDetail();});
+document.getElementById("theme").onclick=()=>{const r=document.documentElement;
+  const cur=r.getAttribute("data-theme")|| (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+  const nx=cur==="dark"?"light":"dark";r.setAttribute("data-theme",nx);
+  renderWatch();renderRecost();renderDetail();};
+
+renderWatch();renderRecost();renderDetail();
+</script>
