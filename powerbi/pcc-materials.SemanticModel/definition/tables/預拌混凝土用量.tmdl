@@ -1,0 +1,21 @@
+table 預拌混凝土用量
+	lineageTag: 45e39b1d-4f47-4e03-b1d8-8736127d9948
+
+	column 預拌混凝土用量
+		dataType: int64
+		formatString: #,0
+		lineageTag: 4acff348-3ac8-45ee-b87b-dc689d1cae55
+		summarizeBy: none
+		sourceColumn: [預拌混凝土用量]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+	partition 預拌混凝土用量 = calculated
+		mode: import
+		source = SELECTCOLUMNS(GENERATESERIES(0,60000,100),"預拌混凝土用量",[Value])
+

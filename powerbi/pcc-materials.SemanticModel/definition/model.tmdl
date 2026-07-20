@@ -1,0 +1,23 @@
+model Model
+	culture: zh-TW
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: zh-TW
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["fact_price_history"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table fact_price_history
+ref table 期間選項
+ref table 鋼筋用量
+ref table H型鋼用量
+ref table 鋼板用量
+ref table 預拌混凝土用量
+ref table 原始時間
+ref table 重估時間
+

@@ -1,0 +1,458 @@
+table fact_price_history
+	lineageTag: a80c3374-d4fa-44eb-b6d4-5411677bbb9b
+
+	measure 平均單價 = AVERAGE(fact_price_history[price])
+		formatString: #,0
+		lineageTag: b7a16612-72f8-40db-a38d-f5ae622d8cd9
+
+	measure _最新期 = CALCULATE(MAX(fact_price_history[period_date]), ALL(fact_price_history))
+		isHidden
+		lineageTag: 59c016f4-54a0-4a89-90ca-398ebd39eca7
+
+	measure 鋼筋均價 = CALCULATE([平均單價], fact_price_history[material]="鋼筋")
+		formatString: #,0
+		lineageTag: 5b87b308-cb47-4341-9dad-d793e2c3805b
+
+	measure H型鋼均價 = CALCULATE([平均單價], fact_price_history[material]="H型鋼")
+		formatString: #,0
+		lineageTag: 6ee3683b-7296-492d-84c6-1ab3be6320b1
+
+	measure 鋼板均價 = CALCULATE([平均單價], fact_price_history[material]="鋼板")
+		formatString: #,0
+		lineageTag: a94a57d9-60bf-4031-a433-15aa106cb851
+
+	measure 預拌均價 = CALCULATE([平均單價], fact_price_history[material]="預拌混凝土")
+		formatString: #,0
+		lineageTag: 2ec4930b-c112-4a8c-b6f7-3762574b2f7d
+
+	measure 瀝青均價 = CALCULATE([平均單價], fact_price_history[material]="瀝青混凝土")
+		formatString: #,0
+		lineageTag: 14850948-d003-4aaa-ad3f-6084bfcdf54a
+
+	measure 鋼筋現價 = VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]="鋼筋", fact_price_history[period_date]=d)
+		formatString: #,0
+		lineageTag: 42392ad7-c7b8-423e-b150-f23f67fc1939
+
+	measure 瀝青現價 = VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]="瀝青混凝土", fact_price_history[period_date]=d)
+		formatString: #,0
+		lineageTag: 122fe734-8def-487c-a7cb-3e9258df9db1
+
+	measure 預拌現價 = VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]="預拌混凝土", fact_price_history[period_date]=d)
+		formatString: #,0
+		lineageTag: e90a2818-a2f8-4101-9048-67895708b324
+
+	measure H型鋼現價 = VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]="H型鋼", fact_price_history[period_date]=d)
+		formatString: #,0
+		lineageTag: ea8aff62-ed7b-486f-bace-ccfd6555e26f
+
+	measure 鋼筋年漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="鋼筋",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]="鋼筋",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 7fa033de-b96a-4656-9168-c107ca63e44e
+
+	measure 瀝青年漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="瀝青混凝土",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]="瀝青混凝土",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)
+		formatString: 0.0%
+		lineageTag: 0437f259-50ed-4da8-8f8a-159715286797
+
+	measure 預拌年漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="預拌混凝土",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]="預拌混凝土",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: d49a3277-af56-4842-9efb-9f542b3fccba
+
+	measure H型鋼年漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="H型鋼",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]="H型鋼",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: e6f1d3f1-c5cd-4131-b699-3b67d32100e7
+
+	measure 年漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)
+		formatString: 0.0%
+		lineageTag: 33b098bd-cdd9-4ed4-8bce-cf63b2858bfd
+
+	measure _選月數 = SELECTEDVALUE('期間選項'[月數], 9999)
+		isHidden
+		lineageTag: 68f7aecb-5f7a-4921-9dc3-6e193787d742
+
+	measure 在範圍內 = VAR sel=[_選月數] VAR d=[_最新期] VAR cutoff=IF(sel>=9999, DATE(1900,1,1), EDATE(d, -MIN(sel,240))) RETURN IF(MAX(fact_price_history[period_date]) > cutoff, 1, 0)
+		isHidden
+		lineageTag: e6861b8e-f0b8-46a6-893b-019f61bf42ad
+
+	measure 鋼筋均價R = IF([在範圍內]=1, [鋼筋均價])
+		formatString: #,0
+		lineageTag: 21d2d481-0694-41ae-8e05-300c964b1ecb
+
+	measure H型鋼均價R = IF([在範圍內]=1, [H型鋼均價])
+		formatString: #,0
+		lineageTag: 7f83715d-28eb-473e-b349-d3b9a5c3b8df
+
+	measure 鋼板均價R = IF([在範圍內]=1, [鋼板均價])
+		formatString: #,0
+		lineageTag: 7dc04fb5-ed45-42dd-b812-6189736b2bae
+
+	measure 預拌均價R = IF([在範圍內]=1, [預拌均價])
+		formatString: #,0
+		lineageTag: 2aa726b6-fc89-458b-8361-64ae55720122
+
+	measure 瀝青均價R = IF([在範圍內]=1, [瀝青均價])
+		formatString: #,0
+		lineageTag: aca89225-d87f-4eb8-a478-9be1169564fe
+
+	measure 鋼筋月漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="鋼筋",fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼筋", fact_price_history[period_date]<=EDATE(d,-1)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history),fact_price_history[material]="鋼筋",fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 5ae6c8a2-ec4d-435f-84ea-4af4e32f64a8
+
+	measure 鋼筋3年漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="鋼筋",fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼筋", fact_price_history[period_date]<=EDATE(d,-36)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history),fact_price_history[material]="鋼筋",fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: c8300da7-3793-4656-8136-64e7943b35f0
+
+	measure 鋼筋均價F = VAR d=MAX(fact_price_history[period_date]) VAR pd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼筋", fact_price_history[period_date]<=d) RETURN CALCULATE([平均單價], REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼筋", fact_price_history[period_date]=pd)
+		formatString: #,0
+		isHidden
+		lineageTag: 54fdd954-fc9f-4932-9446-20f0433b3091
+
+	measure 鋼筋累漲R = VAR sel=[_選月數] VAR d=[_最新期] VAR t=IF(sel>=9999, CALCULATE(MIN(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼筋"), EDATE(d,-MIN(sel,240))) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼筋", fact_price_history[period_date]<=t) VAR base=CALCULATE([平均單價], REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼筋", fact_price_history[period_date]=bd) VAR cur=CALCULATE([平均單價], fact_price_history[material]="鋼筋") RETURN IF([在範圍內]=1, DIVIDE(cur-base, base))
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: eb174c0e-37ad-4c66-9f39-33b284019aef
+
+	measure H型鋼月漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="H型鋼",fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="H型鋼", fact_price_history[period_date]<=EDATE(d,-1)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history),fact_price_history[material]="H型鋼",fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: fb706ac4-02b7-4abf-8935-5086ec7cd8c5
+
+	measure H型鋼3年漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="H型鋼",fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="H型鋼", fact_price_history[period_date]<=EDATE(d,-36)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history),fact_price_history[material]="H型鋼",fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 56543adc-0093-48d5-8958-304464d2dcde
+
+	measure H型鋼均價F = VAR d=MAX(fact_price_history[period_date]) VAR pd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="H型鋼", fact_price_history[period_date]<=d) RETURN CALCULATE([平均單價], REMOVEFILTERS(fact_price_history), fact_price_history[material]="H型鋼", fact_price_history[period_date]=pd)
+		formatString: #,0
+		isHidden
+		lineageTag: ffcb6c88-57fa-4bb6-8892-6f2fbd44b522
+
+	measure H型鋼累漲R = VAR sel=[_選月數] VAR d=[_最新期] VAR t=IF(sel>=9999, CALCULATE(MIN(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="H型鋼"), EDATE(d,-MIN(sel,240))) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="H型鋼", fact_price_history[period_date]<=t) VAR base=CALCULATE([平均單價], REMOVEFILTERS(fact_price_history), fact_price_history[material]="H型鋼", fact_price_history[period_date]=bd) VAR cur=CALCULATE([平均單價], fact_price_history[material]="H型鋼") RETURN IF([在範圍內]=1, DIVIDE(cur-base, base))
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 2df43f68-3d83-4112-be3f-6627b919e245
+
+	measure 鋼板現價 = VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[material]="鋼板", fact_price_history[period_date]=d)
+		formatString: #,0
+		lineageTag: f4645885-b65c-4550-b8bc-8d668ef9d19c
+
+	measure 鋼板年漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="鋼板",fact_price_history[period_date]=d) VAR p=CALCULATE([平均單價],fact_price_history[material]="鋼板",fact_price_history[period_date]=EDATE(d,-12)) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 43359b1b-3c32-4169-b3ec-f99493c2ce83
+
+	measure 鋼板月漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="鋼板",fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼板", fact_price_history[period_date]<=EDATE(d,-1)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history),fact_price_history[material]="鋼板",fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 6db3fb7a-7d77-4736-970e-c39eaf5f2493
+
+	measure 鋼板3年漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="鋼板",fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼板", fact_price_history[period_date]<=EDATE(d,-36)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history),fact_price_history[material]="鋼板",fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: bf0a8a20-6eca-45b0-acab-1b0cf9b3d802
+
+	measure 鋼板均價F = VAR d=MAX(fact_price_history[period_date]) VAR pd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼板", fact_price_history[period_date]<=d) RETURN CALCULATE([平均單價], REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼板", fact_price_history[period_date]=pd)
+		formatString: #,0
+		isHidden
+		lineageTag: d69503d5-2365-444c-8f0d-03efcf3141bf
+
+	measure 鋼板累漲R = VAR sel=[_選月數] VAR d=[_最新期] VAR t=IF(sel>=9999, CALCULATE(MIN(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼板"), EDATE(d,-MIN(sel,240))) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼板", fact_price_history[period_date]<=t) VAR base=CALCULATE([平均單價], REMOVEFILTERS(fact_price_history), fact_price_history[material]="鋼板", fact_price_history[period_date]=bd) VAR cur=CALCULATE([平均單價], fact_price_history[material]="鋼板") RETURN IF([在範圍內]=1, DIVIDE(cur-base, base))
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: daee5618-3d5a-4d9d-b47f-719e04e80013
+
+	measure 預拌月漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="預拌混凝土",fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="預拌混凝土", fact_price_history[period_date]<=EDATE(d,-1)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history),fact_price_history[material]="預拌混凝土",fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 8dfe6ca5-34b3-4fd3-878d-94c4986d54cf
+
+	measure 預拌3年漲跌 = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[material]="預拌混凝土",fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="預拌混凝土", fact_price_history[period_date]<=EDATE(d,-36)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history),fact_price_history[material]="預拌混凝土",fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 93ac4bc8-45bc-4c4f-b667-113f332bc857
+
+	measure 預拌均價F = VAR d=MAX(fact_price_history[period_date]) VAR pd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="預拌混凝土", fact_price_history[period_date]<=d) RETURN CALCULATE([平均單價], REMOVEFILTERS(fact_price_history), fact_price_history[material]="預拌混凝土", fact_price_history[period_date]=pd)
+		formatString: #,0
+		isHidden
+		lineageTag: 5eff7e0d-45f0-4780-9bbc-fa4e96abcf93
+
+	measure 預拌累漲R = VAR sel=[_選月數] VAR d=[_最新期] VAR t=IF(sel>=9999, CALCULATE(MIN(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="預拌混凝土"), EDATE(d,-MIN(sel,240))) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history), fact_price_history[material]="預拌混凝土", fact_price_history[period_date]<=t) VAR base=CALCULATE([平均單價], REMOVEFILTERS(fact_price_history), fact_price_history[material]="預拌混凝土", fact_price_history[period_date]=bd) VAR cur=CALCULATE([平均單價], fact_price_history[material]="預拌混凝土") RETURN IF([在範圍內]=1, DIVIDE(cur-base, base))
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 4caf752f-4c74-40e2-9287-1be660de8b3b
+
+	measure 資料截至文字 = VAR d=[_最新期] RETURN "資料截至 民國 " & (YEAR(d)-1911) & "/" & MONTH(d) & " · 來源：工程會價格趨勢"
+		lineageTag: 24ea430b-f277-4c0f-bf38-2f789e9650d8
+
+	measure 領漲文字 = VAR tbl={("鋼筋",[鋼筋年漲跌]),("H型鋼",[H型鋼年漲跌]),("鋼板",[鋼板年漲跌]),("預拌混凝土",[預拌年漲跌])} VAR nm=MAXX(TOPN(1,tbl,[Value2]),[Value1]) VAR v=MAXX(tbl,[Value2]) VAR n5=COUNTROWS(FILTER(tbl,[Value2]>0.05)) RETURN nm & " 領漲，近一年 +" & FORMAT(v,"0.0%") & "：四項橋梁大宗材料中有 " & n5 & " 項近一年漲幅超過 5%，編列中或待發包工程材料成本恐高於原估。"
+		lineageTag: 13146395-c656-494a-9d8b-9346b040c7c7
+
+	measure 領漲幅度文字 = VAR tbl={("鋼筋",[鋼筋年漲跌]),("H型鋼",[H型鋼年漲跌]),("鋼板",[鋼板年漲跌]),("預拌混凝土",[預拌年漲跌])} VAR v=MAXX(tbl,[Value2]) RETURN "+" & FORMAT(v,"0.0%")
+		lineageTag: 7157059f-e5d0-4212-954f-64e5ef811d4b
+
+	measure 領漲副標 = VAR tbl={("鋼筋",[鋼筋年漲跌]),("H型鋼",[H型鋼年漲跌]),("鋼板",[鋼板年漲跌]),("預拌混凝土",[預拌年漲跌])} VAR nm=MAXX(TOPN(1,tbl,[Value2]),[Value1]) RETURN nm & " · 近一年"
+		lineageTag: 416993dc-2dc1-4d17-95c0-00a5b791b87a
+
+	measure 年漲跌色 = IF([年漲跌]>=0.0005,"#D03B3B", IF([年漲跌]<=-0.0005,"#0F8A3C","#8A93A0"))
+		lineageTag: eb4d9b14-1d25-4e33-ad7a-d03644c0fe03
+
+	measure 最新單價m = VAR d=[_最新期] RETURN CALCULATE([平均單價], fact_price_history[period_date]=d)
+		formatString: #,0
+		lineageTag: 1d0cf2a8-59e2-42aa-b5d6-32b73cb98592
+
+	measure 近1月變化m = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history[period_date]),fact_price_history[period_date]<=EDATE(d,-1)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history[period_date]),fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: cd2f56ed-2053-4f1c-b21d-e776ee9c12a4
+
+	measure 近1月變化色 = IF([近1月變化m]>=0.0005,"#D03B3B",IF([近1月變化m]<=-0.0005,"#0F8A3C","#5A6472"))
+		lineageTag: 79159177-21ed-406a-9e4f-4fab4aec1a21
+
+	measure 近3月變化m = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history[period_date]),fact_price_history[period_date]<=EDATE(d,-3)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history[period_date]),fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 025f5529-14f8-493d-ad5c-51c735645ac2
+
+	measure 近3月變化色 = IF([近3月變化m]>=0.0005,"#D03B3B",IF([近3月變化m]<=-0.0005,"#0F8A3C","#5A6472"))
+		lineageTag: 60c0cdb6-b1b1-4420-8fe6-3ef3ad44d868
+
+	measure 近6月變化m = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history[period_date]),fact_price_history[period_date]<=EDATE(d,-6)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history[period_date]),fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 91459a0c-a72d-4489-8d5d-618cd484707d
+
+	measure 近6月變化色 = IF([近6月變化m]>=0.0005,"#D03B3B",IF([近6月變化m]<=-0.0005,"#0F8A3C","#5A6472"))
+		lineageTag: 0c954fde-61db-406e-83a1-2b9134fabb4d
+
+	measure 近1年變化m = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history[period_date]),fact_price_history[period_date]<=EDATE(d,-12)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history[period_date]),fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: ff7a2f0b-4a7a-4cd8-a553-d417c0fd9246
+
+	measure 近1年變化色 = IF([近1年變化m]>=0.0005,"#D03B3B",IF([近1年變化m]<=-0.0005,"#0F8A3C","#5A6472"))
+		lineageTag: fab99707-1a38-47a4-8f2f-27622ffbbea4
+
+	measure 近3年變化m = VAR d=[_最新期] VAR c=CALCULATE([平均單價],fact_price_history[period_date]=d) VAR bd=CALCULATE(MAX(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history[period_date]),fact_price_history[period_date]<=EDATE(d,-36)) VAR p=CALCULATE([平均單價],REMOVEFILTERS(fact_price_history[period_date]),fact_price_history[period_date]=bd) RETURN DIVIDE(c-p,p)
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 34bea946-7783-4efb-aeb8-599b12b382ec
+
+	measure 近3年變化色 = IF([近3年變化m]>=0.0005,"#D03B3B",IF([近3年變化m]<=-0.0005,"#0F8A3C","#5A6472"))
+		lineageTag: 7d93527c-0260-4059-a71f-08c1cb0c149a
+
+	measure 單價R = IF([在範圍內]=1, [平均單價])
+		formatString: #,0
+		lineageTag: 750ff16c-c29b-4ff1-a567-0f66e3874d7c
+
+	measure 材料色 = SWITCH(SELECTEDVALUE(fact_price_history[material]),"鋼筋","#2A78D6","H型鋼","#C85F89","鋼板","#1BAF7A","預拌混凝土","#008300","#2F4B8F")
+		lineageTag: 068eccf7-b366-4c32-bb75-0d6bb8654d14
+
+	measure 品項標題 = SELECTEDVALUE(fact_price_history[material],"—") & " 單價走勢"
+		lineageTag: 2d9a5851-35d9-4906-9c13-d114d895655d
+
+	measure 品項副標 = "單位：" & IF(SELECTEDVALUE(fact_price_history[material])="預拌混凝土","元/方","元/噸")
+		lineageTag: e271a9c3-aedc-4652-aa8b-7c7ce7a7deae
+
+	measure 該月標籤 = VAR d=MAX(fact_price_history[period_date]) RETURN "民國 " & (YEAR(d)-1911) & "/" & MONTH(d) & " 各區域單價"
+		lineageTag: b25959fb-f48e-4973-8104-9c704572c3d3
+
+	measure 原始月v = SELECTEDVALUE('原始時間'[原始月], CALCULATE(MIN(fact_price_history[period_date]), REMOVEFILTERS(fact_price_history)))
+		isHidden
+		lineageTag: 50ab6609-b3bc-4e2c-876c-c33c2c488264
+
+	measure 重估月v = SELECTEDVALUE('重估時間'[重估月], [_最新期])
+		isHidden
+		lineageTag: 27f944c3-5dab-4356-9074-73b7ea0f5af2
+
+	measure 組合成本 = [鋼筋用量值]*[鋼筋均價F]+[H型鋼用量值]*[H型鋼均價F]+[鋼板用量值]*[鋼板均價F]+[預拌混凝土用量值]*[預拌均價F]
+		formatString: #,0
+		lineageTag: cd820140-db77-4f6e-b4ce-e38632be3e97
+
+	measure 原始成本 = VAR d=[原始月v] RETURN CALCULATE([組合成本], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=d)
+		formatString: #,0
+		lineageTag: 48343afd-7c77-4350-933f-c412f75f7ca7
+
+	measure 重估成本 = VAR d=[重估月v] RETURN CALCULATE([組合成本], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=d)
+		formatString: #,0
+		lineageTag: a53f1da5-57e9-4bc3-bacc-640ae80a026c
+
+	measure 差額 = [重估成本]-[原始成本]
+		formatString: +#,0;-#,0
+		lineageTag: e448c550-c6f6-4a8c-aae9-033ba3a384aa
+
+	measure 差額率 = DIVIDE([差額],[原始成本])
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: c938237b-1b7c-48f4-89f9-fe7b503823e3
+
+	measure 建議編列 = [重估成本]*1.08
+		formatString: #,0
+		lineageTag: 43af638b-aa72-47e2-8756-03ca3b13713d
+
+	measure 原始成本萬 = DIVIDE([原始成本],10000)
+		formatString: #,0" 萬"
+		lineageTag: 45ec661c-ccc3-421d-87b8-259dc2388bbf
+
+	measure 重估成本萬 = DIVIDE([重估成本],10000)
+		formatString: #,0" 萬"
+		lineageTag: f8528281-a2cd-41cc-a032-13954b893528
+
+	measure 差額萬 = DIVIDE([差額],10000)
+		formatString: +#,0" 萬";-#,0" 萬";0" 萬"
+		lineageTag: 090424fe-aedc-4e1e-a35b-b6e756ff3db2
+
+	measure 建議編列萬 = DIVIDE([建議編列],10000)
+		formatString: #,0" 萬"
+		lineageTag: ba58380f-4602-42ca-98af-7d8087096af3
+
+	measure 差額色 = IF([差額]>=0,"#D03B3B","#0F8A3C")
+		lineageTag: d432af6e-1125-4876-8b2a-66e9e9768393
+
+	measure 差額說明 = VAR p=[差額率] RETURN IF([差額]>=0, "↑ 需追加 +" & FORMAT(p,"0.0%"), "↓ 可節省 " & FORMAT(p,"0.0%"))
+		lineageTag: 55b6c3a4-6eb1-4da1-b34a-fbf1f45967c9
+
+	measure 原始物價標籤 = VAR d=[原始月v] RETURN "民國 " & (YEAR(d)-1911) & "/" & MONTH(d) & " 物價"
+		lineageTag: 050d81e2-e897-4624-b403-cca4b5917237
+
+	measure 重估物價標籤 = VAR d=[重估月v] RETURN "民國 " & (YEAR(d)-1911) & "/" & MONTH(d) & " 物價"
+		lineageTag: c3ce9523-8ad7-4d6c-a93a-49b15c730f4c
+
+	measure 建議編列說明 = VAR d=[重估月v] RETURN "以民國 " & (YEAR(d)-1911) & "/" & MONTH(d) & " 物價計得材料成本 " & FORMAT([重估成本]/10000,"#,0") & " 萬，另加固定編列緩衝 8%（供編列預留之固定比例，非由物價資料推算）。"
+		lineageTag: 61f0d4bf-4845-4e9f-b670-a0b3b486ea72
+
+	measure 占比標題 = VAR d=[原始月v] RETURN " 以民國 " & (YEAR(d)-1911) & "/" & MONTH(d) & " 物價試算各材料物占比"
+		lineageTag: 0156de47-a9c4-48ff-bbe3-2def5e450f28
+
+	measure 材料成本原始 = VAR mm=SELECTEDVALUE(fact_price_history[material]) VAR do=[原始月v] RETURN SWITCH(mm, "鋼筋", [鋼筋用量值]*CALCULATE([鋼筋均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=do),"H型鋼", [H型鋼用量值]*CALCULATE([H型鋼均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=do),"鋼板", [鋼板用量值]*CALCULATE([鋼板均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=do),"預拌混凝土", [預拌混凝土用量值]*CALCULATE([預拌均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=do), BLANK())
+		formatString: #,0
+		lineageTag: 2b99b204-98e5-40ac-8b76-737d53519199
+
+	measure 材料差額 = VAR mm=SELECTEDVALUE(fact_price_history[material]) VAR do=[原始月v] VAR dr=[重估月v] RETURN SWITCH(mm, "鋼筋", [鋼筋用量值]*(CALCULATE([鋼筋均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=dr)-CALCULATE([鋼筋均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=do)),"H型鋼", [H型鋼用量值]*(CALCULATE([H型鋼均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=dr)-CALCULATE([H型鋼均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=do)),"鋼板", [鋼板用量值]*(CALCULATE([鋼板均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=dr)-CALCULATE([鋼板均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=do)),"預拌混凝土", [預拌混凝土用量值]*(CALCULATE([預拌均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=dr)-CALCULATE([預拌均價F], REMOVEFILTERS(fact_price_history), fact_price_history[period_date]=do)), BLANK())
+		formatString: +#,0;-#,0
+		lineageTag: 6bc5bf17-aba4-4142-b111-64b002a12314
+
+	measure 鋼筋用量值 = SELECTEDVALUE('鋼筋用量'[鋼筋用量], 0)
+		formatString: #,0
+		lineageTag: f4444480-256c-4cb2-a82a-c85268800a76
+
+	measure H型鋼用量值 = SELECTEDVALUE('H型鋼用量'[H型鋼用量], 0)
+		formatString: #,0
+		lineageTag: c260087d-1b96-4eeb-b6bc-53d95da4e836
+
+	measure 鋼板用量值 = SELECTEDVALUE('鋼板用量'[鋼板用量], 0)
+		formatString: #,0
+		lineageTag: b51f2607-4b8a-4b3b-9edc-0eeefaf2478f
+
+	measure 預拌混凝土用量值 = SELECTEDVALUE('預拌混凝土用量'[預拌混凝土用量], 0)
+		formatString: #,0
+		lineageTag: 3d9c757e-8aff-4b14-b9ac-6825dfcf49a5
+
+	column period
+		dataType: string
+		lineageTag: 23067c3e-918b-461d-9168-e5a3532669c7
+		summarizeBy: none
+		sourceColumn: period
+
+	column period_roc
+		dataType: string
+		lineageTag: a43d62ef-31c6-45c9-9185-8ec8d20dcf88
+		summarizeBy: none
+		sourceColumn: period_roc
+
+	column period_date
+		dataType: dateTime
+		formatString: yyyy-MM-dd
+		lineageTag: 49f5780e-2e83-4a40-9646-68dd5da3a6ba
+		summarizeBy: none
+		sourceColumn: period_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column material
+		dataType: string
+		lineageTag: f46f9751-7419-48c5-9838-7fef3477cc97
+		summarizeBy: none
+		sourceColumn: material
+
+	column item_name
+		dataType: string
+		lineageTag: 9743c687-c203-4066-8dc1-138e6ce82f14
+		summarizeBy: none
+		sourceColumn: item_name
+
+	column unit
+		dataType: string
+		lineageTag: ea39dfbc-6165-4f09-8de1-6567c2bbd202
+		summarizeBy: none
+		sourceColumn: unit
+
+	column region
+		dataType: string
+		lineageTag: 79e312d7-3b0e-4315-bfc6-727c4986cb25
+		summarizeBy: none
+		sourceColumn: region
+
+	column region_group
+		dataType: string
+		lineageTag: 5799d9b2-887e-41e2-8996-95e4c40d554d
+		summarizeBy: none
+		sourceColumn: region_group
+
+	column region_level
+		dataType: string
+		lineageTag: 57041f4f-f7c3-41d0-81da-fcd12ae4d424
+		summarizeBy: none
+		sourceColumn: region_level
+
+	column price
+		dataType: double
+		formatString: #,0
+		lineageTag: 32bc45be-f7a1-4dbf-a9bd-ac82c4357fcc
+		summarizeBy: none
+		sourceColumn: price
+
+	column price_min
+		dataType: double
+		formatString: #,0
+		lineageTag: 4b119f5e-cd65-4301-86e6-8e6ddc0a1422
+		summarizeBy: none
+		sourceColumn: price_min
+
+	column price_max
+		dataType: double
+		formatString: #,0
+		lineageTag: fb89a936-af6b-4c49-aee7-21bb805339dd
+		summarizeBy: none
+		sourceColumn: price_max
+
+	column price_basis
+		dataType: string
+		lineageTag: abfaea7d-3734-4535-b98f-61e6bd4947fc
+		summarizeBy: none
+		sourceColumn: price_basis
+
+	column 材料組
+		dataType: string
+		lineageTag: 282f8765-1d2f-45b2-b6f7-553977526605
+		summarizeBy: none
+		sourceColumn: 材料組
+
+	column 規格
+		dataType: string
+		lineageTag: aa0200d1-1d19-40cd-83ea-d5c2aeba45fe
+		summarizeBy: none
+		sourceColumn: 規格
+
+	column 材料規格
+		dataType: string
+		lineageTag: b2ebb724-6504-4061-bdc8-c75d273570f8
+		summarizeBy: none
+		sourceColumn: 材料規格
+
+	column 年月碼
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 526643df-2c45-4dcc-a0d7-e1c77e08565b
+		summarizeBy: none
+		sourceColumn: 年月碼
+
+	partition fact_price_history = m
+		mode: import
+		source =
+				let
+				    HSrc = Csv.Document(Web.Contents("https://raw.githubusercontent.com/a2707mmy/pcc-bulk-materials/main/data/history/material_price_history.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    HP = Table.PromoteHeaders(HSrc, [PromoteAllScalars = true]),
+				    HT = Table.TransformColumnTypes(HP, {{"period_date", type date}, {"price", type number}, {"price_min", type number}, {"price_max", type number}}, "en-US"),
+				    代表 = Table.SelectRows(HT, each ((([material]="鋼筋" and ((Text.Contains([item_name],"SD280") and Text.Contains([item_name],"D10")) or (Text.Contains([item_name],"SD420") and Text.Contains([item_name],"D36")))) or ([material]="預拌混凝土" and (Text.Contains([item_name],"210kgf") or Text.Contains([item_name],"280kgf"))) or ([material]="瀝青混凝土" and ((Text.Contains([item_name],"粗級配") and Text.Contains([item_name],"25mm")) or (Text.Contains([item_name],"密級配") and Text.Contains([item_name],"19mm")))) or ([material]="H型鋼" and Text.Contains([item_name],"H400")) or ([material]="鋼板" and Text.Contains([item_name],"A36"))))),
+				    HS = Table.SelectColumns(代表, {"period","period_roc","period_date","material","item_name","unit","region","region_group","region_level","price","price_min","price_max","price_basis"}),
+				    加材料組 = Table.AddColumn(HS, "材料組", each if List.Contains({"鋼筋","H型鋼","鋼板"}, [material]) then "鋼材" else "混凝土瀝青", type text),
+				    加規格 = Table.AddColumn(加材料組, "規格", each if Text.Contains([item_name],"SD280") then "SD280" else if Text.Contains([item_name],"SD420") then "SD420" else if Text.Contains([item_name],"210kgf") then "210" else if Text.Contains([item_name],"280kgf") then "280" else if (Text.Contains([item_name],"粗級配") and Text.Contains([item_name],"25mm")) then "粗25" else if (Text.Contains([item_name],"密級配") and Text.Contains([item_name],"19mm")) then "密19" else if Text.Contains([item_name],"A36") then "A36" else if Text.Contains([item_name],"H型鋼") then "H400" else [material], type text),
+				    去重 = Table.Distinct(加規格, {"period","material","規格","region_group"}),
+				    加材料規格 = Table.AddColumn(去重, "材料規格", each [material] & " " & [規格], type text),
+				    加年月碼 = Table.AddColumn(加材料規格, "年月碼", each Date.Year([period_date])*100 + Date.Month([period_date]), Int64.Type)
+				in
+				    加年月碼
+

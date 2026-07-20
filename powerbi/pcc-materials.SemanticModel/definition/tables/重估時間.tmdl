@@ -1,0 +1,31 @@
+table 重估時間
+	lineageTag: 5f049b39-de78-4faa-839b-345ed3a122fd
+
+	column 重估月
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-MM-dd
+		lineageTag: 9cef5e26-b46a-4df7-8eda-5848e049f462
+		summarizeBy: none
+		sourceColumn: [重估月]
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 重估月標籤
+		dataType: string
+		lineageTag: b9eaf02f-588e-4d8a-b58c-8de1a270de5a
+		summarizeBy: none
+		sourceColumn: [重估月標籤]
+		sortByColumn: 排序鍵
+
+	column 排序鍵
+		dataType: int64
+		isHidden
+		lineageTag: db575195-5756-4047-9fc2-5b8218ac4365
+		summarizeBy: none
+		sourceColumn: [排序鍵]
+
+	partition 重估時間 = calculated
+		mode: import
+		source = ADDCOLUMNS(DISTINCT(SELECTCOLUMNS(fact_price_history,"重估月",fact_price_history[period_date])),"重估月標籤","民國 " & (YEAR([重估月])-1911) & "/" & MONTH([重估月]),"排序鍵", YEAR([重估月])*100+MONTH([重估月]))
+

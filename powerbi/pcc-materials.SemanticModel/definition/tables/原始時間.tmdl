@@ -1,0 +1,31 @@
+table 原始時間
+	lineageTag: 65fa8278-dc6c-4765-b20c-ba72e9c7cee3
+
+	column 原始月
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-MM-dd
+		lineageTag: 4598a3d5-74dd-4563-90af-643b617eae20
+		summarizeBy: none
+		sourceColumn: [原始月]
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 原始月標籤
+		dataType: string
+		lineageTag: 73f09d92-fff7-4b76-9148-bb475e68fac9
+		summarizeBy: none
+		sourceColumn: [原始月標籤]
+		sortByColumn: 排序鍵
+
+	column 排序鍵
+		dataType: int64
+		isHidden
+		lineageTag: 1b6ee137-7293-48d5-8aed-713a6526c462
+		summarizeBy: none
+		sourceColumn: [排序鍵]
+
+	partition 原始時間 = calculated
+		mode: import
+		source = ADDCOLUMNS(DISTINCT(SELECTCOLUMNS(fact_price_history,"原始月",fact_price_history[period_date])),"原始月標籤","民國 " & (YEAR([原始月])-1911) & "/" & MONTH([原始月]),"排序鍵", YEAR([原始月])*100+MONTH([原始月]))
+

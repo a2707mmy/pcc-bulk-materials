@@ -1,0 +1,21 @@
+table H型鋼用量
+	lineageTag: 326e36a2-4e7c-4468-9b2f-6048d65b60f4
+
+	column H型鋼用量
+		dataType: int64
+		formatString: #,0
+		lineageTag: aebe2278-38d9-4f25-9a11-4c6fd9949d02
+		summarizeBy: none
+		sourceColumn: [H型鋼用量]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+	partition H型鋼用量 = calculated
+		mode: import
+		source = SELECTCOLUMNS(GENERATESERIES(0,5000,10),"H型鋼用量",[Value])
+

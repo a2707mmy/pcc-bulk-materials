@@ -1,0 +1,21 @@
+table 鋼筋用量
+	lineageTag: e616bd0c-ad60-47f2-91ac-c4bda4382069
+
+	column 鋼筋用量
+		dataType: int64
+		formatString: #,0
+		lineageTag: b0bb1774-a014-4766-8950-5a8ffa8f7708
+		summarizeBy: none
+		sourceColumn: [鋼筋用量]
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 0
+				}
+
+		annotation SummarizationSetBy = User
+
+	partition 鋼筋用量 = calculated
+		mode: import
+		source = SELECTCOLUMNS(GENERATESERIES(0,10000,10),"鋼筋用量",[Value])
+

@@ -1,0 +1,26 @@
+table 期間選項
+	lineageTag: eab81ed6-d3f6-4e46-afd8-292ccab23616
+
+	column 選項
+		dataType: string
+		lineageTag: 16b50e59-622f-4d27-bde5-f29154c4f6a4
+		summarizeBy: none
+		sourceColumn: [選項]
+		sortByColumn: 排序
+
+	column 月數
+		dataType: int64
+		lineageTag: 2ad13513-94c9-4925-9093-14659a7663da
+		summarizeBy: none
+		sourceColumn: [月數]
+
+	column 排序
+		dataType: int64
+		lineageTag: d5a71e7b-a001-4de1-878e-d6ef198c1b06
+		summarizeBy: none
+		sourceColumn: [排序]
+
+	partition 期間選項 = calculated
+		mode: import
+		source = DATATABLE("選項", STRING, "月數", INTEGER, "排序", INTEGER, {{"近1月",1,1},{"近1年",12,2},{"近3年",36,3},{"全期",9999,4}})
+
