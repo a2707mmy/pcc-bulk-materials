@@ -4,7 +4,7 @@
 背景 API（未設限、無需登入）：
   列目錄  GET  {list_path}                        -> 全檔案清單 JSON
   下載檔  POST {download_path}  {"id": <fileNo>}  -> PDF blob（注意 id 放 fileNo token，非數字 id）
-主機憑證缺 Subject Key Identifier，沿用與 fetch.py 相同的 SHA-256 指紋釘選
+主機憑證缺 Subject Key Identifier，改採 SHA-256 憑證指紋釘選
 （仍驗證伺服器身分，只繞過壞掉的鏈驗證；見 config/sources.yaml 註解）。
 
 退出碼：0=有新檔寫入、2=清單內全部已存在（無新檔）、1=有下載失敗（告警）。

@@ -8,7 +8,7 @@
                —— 預拌 / 瀝青（每項 5 區列）
   county_range 縣市區間：縣市 | 砂價格區間 | 石價格區間 —— 砂石
 
-同一檔內若同 (品項,地區) 出現多次（舊格式一月多筆調查），取平均為當月值。
+同一檔內若同 (品項,地區) 出現多次（舊格式一月多筆週調查），取最後一週（日期最新）為當月值。
 期別取自檔名（民國 YYYMMDD）。輸出 data/history/material_price_history.csv（長格式）。
 
 用法：
@@ -283,12 +283,14 @@ def main():
 
     df = pd.DataFrame(all_rows)
     if not df.empty:
-        # 同檔多筆調查 -> 當月均值（同 period,material,item,region）
+        # 同檔多筆週調查 -> 取最後一週（同 period,material,item,region）。
+        # parse_pdf 依 extract_tables() 由上而下（即週調查時間先後）附加各列，
+        # 且此處 groupby 前未重排，故每組最後一筆即為最後一週；"last" 亦會略過空值。
         keys = ["period", "period_roc", "period_date", "material", "item_name",
                 "unit", "region", "region_group", "region_level", "price_basis",
                 "source_dataset"]
         agg = df.groupby(keys, as_index=False, dropna=False).agg(
-            price=("price", "mean"), price_min=("price_min", "min"),
+            price=("price", "last"), price_min=("price_min", "min"),
             price_max=("price_max", "max"),
             source_file=("source_file", "first"))
         df = agg.sort_values(["period_date", "material", "item_name", "region"])

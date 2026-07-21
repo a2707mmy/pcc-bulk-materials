@@ -1,7 +1,7 @@
 # 大宗資材價格資料來源登錄檔
 # 新增/調整資料集只需改這裡，不需改動程式碼。
 
-host: "https://pcic.pcc.gov.tw/pwc-web/api/service/opendata-file/document/"
+host: "https://pcic.pcc.gov.tw"
 
 # 該政府主機憑證缺 Subject Key Identifier，新版 OpenSSL 的鏈驗證會拒絕（SSLCertVerificationError）。
 # 為避免盲目停用 TLS 驗證（MITM 風險），改採「憑證指紋釘選」：仍驗證對方確為該伺服器，
@@ -40,45 +40,6 @@ pdf_series:
   - material: 瀝青混凝土
     name_prefix: "瀝青混凝土價格趨勢"
     layout: region_stat
-
-# ── 開放資料集登錄（已停用為即時源；保留供未來需要時重啟）────────────────
-# 2026-07 起不再使用（資料落後）。詳見記憶 opendata-source-shelved。
-datasets:
-  - name: 鋼筋
-    material: 鋼筋
-    dataset_id: 6820
-    file: "鋼筋.csv"
-    family: wide_region
-  - name: H型鋼
-    material: H型鋼
-    dataset_id: 6577
-    file: "H型鋼.csv"
-    family: wide_region
-  - name: 鋼板
-    material: 鋼板
-    dataset_id: 6578
-    file: "鋼板.csv"
-    family: wide_region
-  - name: 砂石
-    material: 砂石
-    dataset_id: 6818
-    file: "砂石.csv"
-    family: county_range
-  - name: 預拌混凝土
-    material: 預拌混凝土
-    dataset_id: 6819
-    file: "預拌混凝土.csv"
-    family: region_stat
-  - name: 瀝青混凝土
-    material: 瀝青混凝土
-    dataset_id: 6579
-    file: "瀝青混凝土.csv"
-    family: region_stat
-  - name: 大宗資材及其漲跌幅彙整表
-    material: 彙整表
-    dataset_id: 7374
-    file: "大宗資材及其漲跌幅彙整表.csv"
-    family: summary
 
 # 地區標籤 -> 北中南東/全國 彙總群組
 region_group:

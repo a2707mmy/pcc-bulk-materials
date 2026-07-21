@@ -15,7 +15,7 @@ run.log
 *.bak
 *.bak[0-9]
 
-# 保留 data/raw 與 data/curated：方案 B 以 git 版本歷史作為稽核軌跡與資料累積。
+# 保留 data/raw：以 git 版本歷史作為稽核軌跡與資料累積。
 
 # 歷史彙整表 PDF 原始檔（150 檔、體積大、屬公開資料）保留本機、不推上 GitHub；
 # 由其轉出的 data/history/material_price_history.csv 則入庫。

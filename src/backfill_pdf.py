@@ -8,7 +8,7 @@
 
 作法：偵測「單位」欄（值形如 元/M3、元/T、元/包）→ 其左為地區、其右為當月價。
 調查項目為合併儲存格，向下填補。期別取自檔名（民國 YYYMMDD）。
-輸出 data/history/material_price_history.csv（長格式，可併入 fact_material_price）。
+輸出 data/history/material_price_history.csv（長格式，與 consolidate_pdf.py 同一份歷史表）。
 """
 from __future__ import annotations
 
@@ -81,7 +81,7 @@ def infer_material(item: str) -> str:
 def norm_item(item: str) -> str:
     """跨版面標準化品名，讓歷史序列不因細微差異斷裂。
     NFKC 將 PDF 抽出的 CJK 相容字元（U+F9xx，如 泥/蘭）還原為標準字，
-    否則品名無法與現有資料 / dim_material 對應。"""
+    否則品名無法與現有歷史資料對應。"""
     s = unicodedata.normalize("NFKC", item or "")
     s = re.sub(r"\s+", "", s)
     s = s.replace("SD420w", "SD420W").replace("舖面", "鋪面")
