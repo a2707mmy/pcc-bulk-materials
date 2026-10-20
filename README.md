@@ -75,6 +75,8 @@ Get-Content 'D:\Power BI\run.log' -Tail 20 -Encoding UTF8  # 看本機執行日�
 `https://raw.githubusercontent.com/<帳號>/<repo>/main/data/history/material_price_history.csv`
 設定 Power BI 服務排程重新整理即可定時取得最新資料。
 
+網頁版目前的設定（認證、排程、擁有者）與變更紀錄見 [PowerBI網頁版設定紀錄.md](PowerBI網頁版設定紀錄.md)。
+
 ## 維護
 
 - **調整地區歸屬**（如宜蘭縣改歸東區）：改 `config/sources.yaml` 的 `county_group`。
