@@ -11,6 +11,9 @@
 同一檔內若同 (品項,地區) 出現多次（舊格式一月多筆週調查），取最後一週（日期最新）為當月值。
 期別取自檔名（民國 YYYMMDD）。輸出 data/history/material_price_history.csv（長格式）。
 
+工程會漏公告的月份，以 data/manual/supplement_prices.csv 人工補值：只補 PDF 沒有的
+(期別,材料,品項,地區)；日後工程會補公告 PDF，即以 PDF 為準、補值自動不採用。
+
 用法：
   python consolidate_pdf.py                # 解析 data/raw/pdf/
   python consolidate_pdf.py <dir> [--dry]  # 解析指定目錄；--dry 不寫檔只印報告
@@ -32,6 +35,7 @@ from common import ROOT, load_config, split_range
 PDF_RAW_DIR = ROOT / "data" / "raw" / "pdf"
 OUT_DIR = ROOT / "data" / "history"
 OUT_CSV = OUT_DIR / "material_price_history.csv"
+SUPPLEMENT_CSV = ROOT / "data" / "manual" / "supplement_prices.csv"
 
 # 地區標籤 -> (region_group, region_level, 正規化地區名)
 REGION_INFO = {
@@ -260,6 +264,24 @@ def parse_pdf(path: Path, material: str, cfg) -> list[dict]:
     return rows
 
 
+def merge_supplement(df: pd.DataFrame) -> tuple[pd.DataFrame, int, int]:
+    """併入人工補值；回傳 (合併後表, 併入列數, 因 PDF 已有而略過列數)。"""
+    if not SUPPLEMENT_CSV.exists():
+        return df, 0, 0
+    sup = pd.read_csv(SUPPLEMENT_CSV, encoding="utf-8-sig", dtype=str, keep_default_na=False)
+    sup = sup.drop(columns=["note"], errors="ignore").replace("", None)
+    for c in ("price", "price_min", "price_max"):
+        sup[c] = pd.to_numeric(sup[c], errors="coerce")
+    key = ["period", "material", "item_name", "region"]
+    have = set(df[key].astype(str).itertuples(index=False, name=None)) if not df.empty else set()
+    is_new = [k not in have for k in sup[key].astype(str).itertuples(index=False, name=None)]
+    new = sup[is_new]
+    if df.empty:
+        return new, len(new), len(sup) - len(new)
+    out = pd.concat([df, new[df.columns]], ignore_index=True)
+    return out.sort_values(["period_date", "material", "item_name", "region"]), len(new), len(sup) - len(new)
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     dry = "--dry" in sys.argv
@@ -294,10 +316,12 @@ def main():
             price_max=("price_max", "max"),
             source_file=("source_file", "first"))
         df = agg.sort_values(["period_date", "material", "item_name", "region"])
+    df, sup_added, sup_skipped = merge_supplement(df)
 
     months = sorted(df["period"].unique()) if not df.empty else []
     print(f"PDF {len(pdfs)}：成功 {len(ok)}、空 {len(empty)}、錯誤 {len(bad)}、非系列略過 {len(skipped)}")
     print(f"輸出 {len(df)} 列；涵蓋 {len(months)} 月 {months[0] if months else '-'} ~ {months[-1] if months else '-'}")
+    print(f"人工補值：併入 {sup_added} 列；PDF 已有而略過 {sup_skipped} 列")
     if not df.empty:
         print("\n各品項 列數 / 月數 / 地區數：")
         for mat, g in df.groupby("material"):

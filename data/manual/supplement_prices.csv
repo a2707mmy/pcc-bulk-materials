@@ -1,0 +1,2 @@
+﻿period,period_roc,period_date,material,item_name,unit,region,region_group,region_level,price_basis,source_dataset,price,price_min,price_max,source_file,note
+112-06,11206,2023-06-01,鋼板,"產品,結構用鋼材,一般結構用軋鋼料,A36,25mm<T≦38mm",元/T,不分區,全國,national,exact,彙整表PDF（人工補值）,28233,,,大宗資材價格彙整表1120630.pdf,工程會未公告鋼板價格趨勢1120630.pdf；依同月彙整表A36價格補值（2026-10-20）

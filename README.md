@@ -85,6 +85,11 @@ Get-Content 'D:\Power BI\run.log' -Tail 20 -Encoding UTF8  # 看本機執行日�
   python -c "import ssl,socket,hashlib; ctx=ssl.create_default_context(); ctx.check_hostname=False; ctx.verify_mode=ssl.CERT_NONE; s=ctx.wrap_socket(socket.create_connection(('pcic.pcc.gov.tw',443)),server_hostname='pcic.pcc.gov.tw'); print(hashlib.sha256(s.getpeercert(True)).hexdigest())"
   ```
   將輸出填入 `sources.yaml` 的 `tls_pin_sha256`。
+- **工程會漏公告某月某材料的價格趨勢 PDF**：在 `data/manual/supplement_prices.csv` 加一列（欄位同歷史表，另有 `note` 說明依據），再執行 `consolidate_pdf.py`。只補 PDF 沒有的「期別×材料×品項×地區」；日後工程會補公告，即以 PDF 為準。目前補值：
+
+  | 期別 | 材料 | 品項 | 價格 | 依據 |
+  |---|---|---|---|---|
+  | 112-06 | 鋼板 | A36 | 28,233 元/噸 | 工程會未公告「鋼板價格趨勢1120630.pdf」；取同月「大宗資材價格彙整表1120630.pdf」（彙整表只列 A36，其他規格未補） |
 
 ## 資料來源與授權
 
